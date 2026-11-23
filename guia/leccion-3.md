@@ -1,6 +1,13 @@
 # Lección 3 · Listo para subir (~1 min)
 
-> Guion para Claude. Lee `guia/estilo.md`. Aquí **no preguntas qué hacer**: lo haces completo y explicas qué cambió.
+> Guion para Claude. Lee `guia/estilo.md`. Aquí **no preguntas qué hacer**: lo haces completo y explicas qué cambió. Son 2 mensajes: el resultado y la despedida.
+
+**ACCIÓN (sin preguntar), en silencio** (`<guion>` y `--marca`/`--cta` como en el paso 2):
+1. **Todas las medidas:** `carrusel.py <guion> <trabajo>/todas --formato todos --marca <la marca elegida: marca/ o marca-N/>/marca.json --cta "<CTA>"` → `instagram/` (4:5), `tiktok/` (pantalla completa, lejos de los botones) y `linkedin/` (con `carrusel.pdf`, que es como LinkedIn muestra los carruseles). Míralas.
+2. **La descripción** (Paso 6 del SKILL.md) según su objetivo, en `<trabajo>/todas/descripcion.txt`, y las vistas: `vista.py <trabajo>/todas --guion <guion> --marca <la marca elegida>/marca.json` (saca la de Instagram y la de TikTok, con su @ y su logo).
+3. **Su marca guardada:** Claude Code → `~/.carrusel-pro/marca.json`. App de Claude → el bloque para pegar en un Proyecto.
+
+## Mensaje 1 · El resultado (cierra el turno)
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -9,28 +16,21 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-"Lo que más se le escapa a la gente: hacen un carrusel bonito y lo suben con una descripción de prisa, y solo en una red. Te lo dejo listo para todas."
+- "Lo que más se le escapa a la gente: un carrusel bonito con una descripción de prisa, y en una sola red. Ya tienes las tres."
+- **Resultado:** la vista de Instagram y la de TikTok, y en una línea "y el PDF para LinkedIn".
+- **La descripción** completa, lista para copiar (con una línea de por qué ayuda a su objetivo: "el gancho de arriba es lo que hace que lo abran").
+- **Cómo subirlo, en tu celular:** Instagram **+ → Publicación → selecciona varias** · TikTok **+ → Fotos** · LinkedIn **Empezar una publicación → + → Añadir un documento**.
+- "Y tu marca ya quedó guardada: la próxima vez no te pregunto tus colores."
+- **Cierra con UNA pregunta**, según lo que tenga (revísalo antes; solo lo que exista):
+  - Drive en la compu o su conector: "¿Te lo guardo en tu Google Drive para abrirlo directo en el celular? 1 · Sí · 2 · No, así está bien"
+  - Si no, conector de Canva o Adobe Express: "¿Te lo dejo también en Canva para editarlo ahí? 1 · Sí · 2 · No"
+  - Si no tiene nada: "Escríbeme «listo» para terminar." (y en una línea: "si algún día quieres Canva o Drive, se conectan gratis en Configuración → Conectores")
 
-**ACCIÓN (sin preguntar), en silencio:**
-1. **Todas las medidas:** `"formato": "todos"` y renderiza: `instagram/` (4:5), `tiktok/` (pantalla completa, lejos de los botones) y `linkedin/` (con `carrusel.pdf`, que es como LinkedIn muestra los carruseles). Míralas.
-2. **La descripción** (Paso 6 del SKILL.md) según su `objetivo`, en `descripcion.txt`, y la vista de TikTok (`vista.py <…>/tiktok --guion … --red tiktok`).
-3. **Texto alternativo** de la portada en una línea.
-4. **Su marca guardada:** Claude Code → `~/.carrusel-pro/marca.json`. App de Claude → el bloque para pegar en un Proyecto.
+**ALTO.** Con «Sí», sigue "Conectores" del SKILL.md (pide nada más: ya dijo que sí) y di en una línea qué hiciste y dónde quedó.
 
-**MENSAJE obligatorio (cierra el turno):**
-- **Resultado:** la vista de TikTok junto a la de Instagram, y las 3 carpetas en una línea.
-- **La descripción** completa, lista para copiar.
-- **Cómo subirlo:** "En tu celular: Instagram **+ → Publicación → selecciona varias**; TikTok **+ → Fotos**; LinkedIn **Empezar una publicación → + → Añadir un documento** con el PDF."
-- Su marca: "Ya quedó guardada: la próxima vez no te pregunto tus colores."
+## Mensaje 2 · Despedida (corta, no es un manual)
 
-**Mejora opcional (una sola vez, con botones, solo lo que exista):** revisa qué tiene.
-- Google Drive en la compu o su conector → "¿Te lo guardo en tu Drive para abrirlo directo en el celular?" · **Sí, en mi Drive** · **No, así está bien**.
-- Conector de Canva o Adobe Express → "¿Te lo dejo también en Canva para editarlo ahí?" · **Sí** · **No**.
-- Si no tiene ninguno: "Si algún día quieres editarlo en Canva o guardarlo en Drive, se conectan gratis en **Configuración → Conectores**." Sin botones.
-Con sí, sigue "Conectores" del SKILL.md, y avisa qué hiciste.
-
-**Cierre (despedida, no manual), en el mismo mensaje:**
-- **Lo que lograste** (3 viñetas: tu primer carrusel, con tu marca, listo para Instagram, TikTok y LinkedIn con su descripción).
+- **Lo que lograste** (3 viñetas: tu primer carrusel · con tu marca, como tú lo quisiste · listo para Instagram, TikTok y LinkedIn con su descripción).
 - "Desde ahora la skill hace todo esto **sola**, sin que le digas cada paso. Solo dile:"
   > **Usando la skill dak-carrusel-pro, hazme un carrusel sobre [tu tema]**
 - "Si quieres la siguiente herramienta gratis, sigue a @dakexplica en TikTok e Instagram."

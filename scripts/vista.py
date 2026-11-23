@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """carrusel-pro · enseña el carrusel como se va a ver publicado: dentro de un iPhone, en Instagram o en TikTok.
 
-  python3 vista.py <carpeta del carrusel> [--guion guion.json] [--red instagram|tiktok]
+  python3 vista.py <carpeta del carrusel> [--guion guion.json] [--marca marca.json] [--red instagram|tiktok]
 
 Lee 01.png (y cuenta las láminas), la marca del guion (logo y @usuario) y, si existe, descripcion.txt.
 Deja `vista-instagram.png` o `vista-tiktok.png` (1080×1350) en la carpeta e imprime:  VISTA <ruta>
@@ -15,7 +15,8 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 import marcos
 
-W, H = 1170, 2532          # pantalla de iPhone 15 a 3x
+W, H = 1170, 2532
+ACENTO = {}                # color e inicial de la marca para la foto de perfil cuando no hay logo          # pantalla de iPhone 15 a 3x
 NEGRO, GRIS, BLANCO = (0, 0, 0), (115, 115, 115), (255, 255, 255)
 
 
@@ -32,8 +33,15 @@ def avatar(logo, lado, color=(226, 61, 46)):
         base = Image.new("RGBA", (lado, lado), BLANCO + (255,))
         lg.thumbnail((int(lado * 0.8), int(lado * 0.8)))
         base.alpha_composite(lg, ((lado - lg.width) // 2, (lado - lg.height) // 2))
-    else:
+    else:                                     # sin logo: el color de su marca con su inicial
+        color = ACENTO.get("c", color)
         base = Image.new("RGBA", (lado, lado), color + (255,))
+        ini = ACENTO.get("ini", "")
+        if ini:
+            fi = f("InstrumentSans-Bold.ttf", lado * 0.5)
+            dd = ImageDraw.Draw(base)
+            claro = sum(color) > 480
+            dd.text((lado / 2 - fi.getlength(ini) / 2, lado * 0.2), ini, font=fi, fill=(17, 17, 17) if claro else BLANCO)
     a.paste(base, (0, 0), m)
     return a
 
@@ -188,7 +196,7 @@ def tiktok(lam, n, usuario, logo, desc):
 
 def main():
     a = sys.argv[1:]
-    if not a:
+    if not a or a[0] in ("-h", "--help"):
         print(__doc__); sys.exit(1)
     carpeta = a[0]
     guion = a[a.index("--guion") + 1] if "--guion" in a else None
@@ -198,17 +206,27 @@ def main():
         marca = json.load(open(guion, encoding="utf-8")).get("marca", {})
         if marca.get("logo") and not os.path.isabs(marca["logo"]):
             marca["logo"] = os.path.join(os.path.dirname(os.path.abspath(guion)), marca["logo"])
+    if "--marca" in a:                       # la marca elegida (marca.json de marca.py o inventada) manda
+        mj = a[a.index("--marca") + 1]
+        mm = json.load(open(mj, encoding="utf-8"))
+        marca = {"usuario": mm.get("usuario") or "@" + "".join(ch for ch in (mm.get("nombre") or "tu_marca").lower() if ch.isalnum()),
+                 "logo": mm.get("logo") if mm.get("logo") and os.path.exists(mm["logo"]) else None}
     pngs = sorted(x for x in os.listdir(carpeta) if x[:2].isdigit() and x.endswith(".png"))
     subs = [r for r in ("instagram", "tiktok") if os.path.isdir(os.path.join(carpeta, r))]
     if not pngs and subs and "--red" not in a:     # formato "ambos"/"todos": una vista por red
         import subprocess
         for r in subs:
             subprocess.run([sys.executable, os.path.abspath(__file__), os.path.join(carpeta, r)] +
-                           (["--guion", guion] if guion else []) + ["--red", r])
+                           (["--guion", guion] if guion else []) +
+                           (["--marca", a[a.index("--marca") + 1]] if "--marca" in a else []) + ["--red", r])
         return
     if not pngs:
         print("NADA no hay láminas (01.png…) en esa carpeta"); sys.exit(2)
     lam = Image.open(os.path.join(carpeta, pngs[0]))
+    col = (mm if "--marca" in a else marca).get("colores", {}).get("acento") if ("--marca" in a or marca) else None
+    if col:
+        ACENTO["c"] = tuple(int(col.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    ACENTO["ini"] = (marca.get("usuario") or "@").lstrip("@")[:1].upper()
     desc = ""
     for cand in (os.path.join(carpeta, "descripcion.txt"), os.path.join(os.path.dirname(os.path.normpath(carpeta)), "descripcion.txt")):
         if os.path.exists(cand):

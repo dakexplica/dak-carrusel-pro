@@ -103,7 +103,7 @@ def lineas(texto, f, ancho):
             actual.append((pal, enf, peg and bool(actual)))
             w_act += (esp if len(actual) > 1 and not peg else 0) + w
         # sin palabra suelta en el último renglón ("…al día / 1"): se baja una palabra del renglón de arriba
-        if res and len(actual) == 1 and len(res[-1]) >= 3 and not actual[0][2]:
+        if res and len(actual) == 1 and len(res[-1]) >= 2 and not actual[0][2]:
             prueba = [res[-1][-1]] + actual
             if ancho_linea(prueba, f) <= ancho:
                 res[-1], actual = res[-1][:-1], prueba
@@ -679,9 +679,27 @@ def render(guion, salida):
     return rutas
 
 
+def opciones(args):
+    """Atajos para no tener que copiar ni editar el guion:
+    --formato instagram|tiktok|linkedin|ambos|todos · --cta "texto del cierre" · --sin-marca (para el «antes»)
+    · --solo-portada (para comparar marcas) · --marca marca.json (usa una marca de marca.py) · --plantilla X"""
+    o, resto, i = {}, [], 0
+    while i < len(args):
+        a = args[i]
+        if a in ("--formato", "--cta", "--marca", "--plantilla"):
+            o[a[2:]] = args[i + 1]; i += 2
+        elif a in ("--sin-marca", "--solo-portada"):
+            o[a[2:]] = True; i += 1
+        else:
+            resto.append(a); i += 1
+    return o, resto
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print(__doc__)
+    op, argv = opciones(sys.argv[1:])
+    sys.argv = [sys.argv[0]] + argv
+    if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):
+        print(__doc__ + "\n" + opciones.__doc__)
         sys.exit(1)
     try:
         with open(sys.argv[1], encoding="utf-8") as fh:
@@ -692,6 +710,36 @@ if __name__ == "__main__":
     except OSError:
         print(f"ERROR no existe el guion «{sys.argv[1]}»."); sys.exit(2)
     salida = sys.argv[2] if len(sys.argv) > 2 else guion.get("salida", "carrusel")
+    if op.get("formato"):
+        guion["formato"] = op["formato"]
+    if op.get("plantilla"):
+        guion["plantilla"] = op["plantilla"]
+    if op.get("marca"):
+        mj = json.load(open(op["marca"], encoding="utf-8"))
+        usuario_antes = guion.get("marca", {}).get("usuario")
+        guion["marca"] = {k: mj[k] for k in ("nombre", "usuario", "colores", "logo", "fuentes") if mj.get(k)}
+        guion["marca"].setdefault("usuario", usuario_antes or "@" + re.sub(r"\W", "", (mj.get("nombre") or "tu_marca").lower()))
+        bm = os.path.dirname(os.path.abspath(op["marca"]))           # rutas de la marca: junto a su marca.json
+        def en_bm(r):
+            for cand in (r, os.path.join(bm, r), os.path.join(os.path.dirname(bm), r)):
+                if os.path.isabs(cand) and os.path.exists(cand):
+                    return cand
+            return os.path.join(bm, r) if not os.path.isabs(r) else r
+        if guion["marca"].get("logo"):
+            guion["marca"]["logo"] = en_bm(guion["marca"]["logo"])
+        guion["marca"]["fuentes"] = {k: en_bm(v) for k, v in (guion["marca"].get("fuentes") or {}).items()
+                                     if isinstance(v, str)}
+        if mj.get("estilo_sugerido") and not op.get("plantilla"):
+            guion["plantilla"] = mj["estilo_sugerido"]
+    if op.get("sin-marca"):
+        guion["marca"] = {"usuario": "@tu_cuenta"}
+        guion["plantilla"] = op.get("plantilla", "minimal")
+    if op.get("cta"):
+        for sl in guion["slides"]:
+            if sl.get("tipo") == "cierre":
+                sl["cta"] = op["cta"]
+    if op.get("solo-portada"):
+        guion["slides"] = guion["slides"][:1]
     base = os.path.dirname(os.path.abspath(sys.argv[1]))
     # rutas relativas (logo, fotos) se buscan junto al guion
     m = guion.get("marca", {})
