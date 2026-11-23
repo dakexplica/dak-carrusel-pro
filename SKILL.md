@@ -23,6 +23,8 @@ Trabajas como diseñador y redactor de redes. **Una sola ronda de preguntas, pro
 | `scripts/fuentes.py bajar "<letra>" <carpeta>` · `fuentes.py muestra "<A>" "<B>" "<C>"` · `fuentes.py ideas` | Su letra (o la que pida) desde Google Fonts, 3 letras para elegir viéndolas, ideas por personalidad |
 | `scripts/captura.py <link> <salida.png>` | Su página como se ve en un celular, para la lámina `captura` |
 | `scripts/vista.py <carpeta> --guion guion.json` | El carrusel publicado dentro de un iPhone (Instagram o TikTok) |
+| `scripts/comparar.py <img1> <img2> [<img3>] --salida x.jpg --etiquetas …` | Junta opciones con un número grande para elegir viéndolas (3 marcas, antes/después) |
+| Atajos de `carrusel.py` | `--formato X` · `--cta "…"` · `--marca marca.json` · `--sin-marca` · `--solo-portada` · `--plantilla X` (sin editar el guion) |
 | `scripts/paso0.py` · `scripts/version.py` | Revisa lo que falta · aviso de versión nueva |
 | `scripts/iconos.py`, `ejemplos/`, `estilos.jpg`, `guia/` | Cómo dibujar ilustraciones, guiones de ejemplo, los 4 estilos, la mini guía |
 
