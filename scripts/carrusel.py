@@ -7,16 +7,17 @@ Uso:
 Solo necesita Pillow (viene en Claude.ai y en casi cualquier Python: pip install pillow).
 El guion trae la marca, la plantilla, el formato y las slides. Ver SKILL.md.
 """
-import json, math, os, random, sys
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+import json, math, os, random, re, sys
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import iconos
+import marcos
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTES = os.path.join(AQUI, "..", "fuentes")
 
-TAMANOS = {"instagram": (1080, 1350), "tiktok": (1080, 1920)}
+TAMANOS = {"instagram": (1080, 1350), "tiktok": (1080, 1920), "linkedin": (1080, 1350)}
 
 # Cada plantilla define fuentes, colores por defecto y cómo se marca el *énfasis*.
 PLANTILLAS = {
@@ -43,6 +44,17 @@ PLANTILLAS = {
 def hexrgb(h, a=255):
     h = h.lstrip("#")
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (a,)
+
+
+def luz(c):
+    f = lambda v: v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    r, g, b = [x / 255 for x in c[:3]]
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+
+
+def contraste(a, b):
+    la, lb = sorted([luz(a), luz(b)], reverse=True)
+    return (la + 0.05) / (lb + 0.05)
 
 
 def mezcla(c1, c2, t):
@@ -90,6 +102,11 @@ def lineas(texto, f, ancho):
                 actual, w_act = [], 0
             actual.append((pal, enf, peg and bool(actual)))
             w_act += (esp if len(actual) > 1 and not peg else 0) + w
+        # sin palabra suelta en el último renglón ("…al día / 1"): se baja una palabra del renglón de arriba
+        if res and len(actual) == 1 and len(res[-1]) >= 3 and not actual[0][2]:
+            prueba = [res[-1][-1]] + actual
+            if ancho_linea(prueba, f) <= ancho:
+                res[-1], actual = res[-1][:-1], prueba
         res.append(actual)
     return res
 
@@ -117,6 +134,8 @@ class Lienzo:
         fm = guion.get("marca", {}).get("fuentes", {})
         if fm.get("titulo"):
             self.p["titulo"] = self.p["titulo_it"] = fm["titulo"]
+        if fm.get("titulo_it"):
+            self.p["titulo_it"] = fm["titulo_it"]
         if fm.get("texto"):
             self.p["texto"] = fm["texto"]
         if fm.get("fuerte") or fm.get("texto"):
@@ -126,6 +145,13 @@ class Lienzo:
         self.tinta = hexrgb(colores.get("tinta", self.p["tinta"]))
         self.acento = hexrgb(colores.get("acento", self.p["acento"]))
         self.suave = mezcla(self.tinta, self.fondo, 0.45)
+        # si el acento de la marca se lee poco sobre el fondo (p. ej. verde claro sobre blanco),
+        # las PALABRAS resaltadas usan una versión más oscura; las figuras siguen con el color exacto.
+        self.acento_txt = self.acento
+        for _ in range(8):
+            if contraste(self.acento_txt, self.fondo) >= 3:
+                break
+            self.acento_txt = mezcla(self.acento_txt, self.tinta, 0.18)
         self.n, self.total = n, total
         self.img = Image.new("RGBA", (self.W, self.H), self.fondo)
         self.d = ImageDraw.Draw(self.img)
@@ -201,7 +227,7 @@ class Lienzo:
                 ff = f_it if (e and enfasis == "italica") else f
                 c = color
                 if e and enfasis in ("color", "italica"):
-                    c = self.acento
+                    c = self.acento_txt
                 if e and enfasis == "caja":
                     c = self.fondo if self.g.get("plantilla") != "bloque" else (17, 17, 17, 255)
                 if e and enfasis == "subrayado":
@@ -262,6 +288,14 @@ def s_portada(c, s):
     c.decorar_fondo()
     tinta = c.tinta
     y = c.y0
+    # con marca, su logo se ve en la portada (arriba a la derecha), no solo chiquito en el pie
+    logo = c.g.get("marca", {}).get("logo")
+    if logo and os.path.exists(logo):
+        lg = Image.open(logo).convert("RGBA")
+        lg.thumbnail((260, 76), Image.LANCZOS)
+        c.img.alpha_composite(lg, (int(c.x1 - lg.width), int(y + 30 - lg.height / 2)))
+        if not s.get("etiqueta"):
+            y += 100
     if s.get("etiqueta"):
         f = fuente(c.p["fuerte"], 32)
         t = s["etiqueta"].upper()
@@ -271,13 +305,13 @@ def s_portada(c, s):
         y += 110
     tiene_foto = bool(s.get("foto")) and os.path.exists(s.get("foto", ""))
     tiene_dibujo = bool(s.get("dibujo")) and not tiene_foto
-    alto_titulo = (c.y1 - y) * (0.48 if tiene_foto else (0.42 if tiene_dibujo else 0.78))
+    alto_titulo = (c.y1 - y) * (0.40 if tiene_foto else (0.42 if tiene_dibujo else 0.78))
     fin = c.texto(s["titulo"], (c.x0, y, c.x1, y + alto_titulo), c.p["titulo"],
-                  150 * c.p["escala_titulo"], tinta, interlineado=1.02,
+                  (112 if tiene_foto else 150) * c.p["escala_titulo"], tinta, interlineado=1.02,
                   vertical="arriba" if (tiene_foto or tiene_dibujo) else "centro")
     if s.get("subtitulo"):
-        fin = c.texto(s["subtitulo"], (c.x0, fin + 56, c.x1, fin + 286), c.p["texto"], 44, c.suave,
-                      enfasis="color", interlineado=1.3)
+        fin = c.texto(s["subtitulo"], (c.x0, fin + (36 if tiene_foto else 56), c.x1, fin + (160 if tiene_foto else 286)),
+                      c.p["texto"], 42, c.suave, enfasis="color", interlineado=1.25, minimo=36)
     if tiene_foto:
         c.foto(s["foto"], (c.x0, fin + 40, c.x1, c.y1 - 10))
     elif tiene_dibujo:
@@ -298,11 +332,18 @@ def s_punto(c, s):
         lado = 300 if c.formato == "instagram" else 330
         c.dibujo(s["dibujo"], (c.x1 - lado, c.y0 - 20, c.x1, c.y0 - 20 + lado))
         y = max(y, c.y0 + lado + 10)
-    fin = c.texto(s["titulo"], (c.x0, y, c.x1, y + 330), c.p["titulo"], 108 * c.p["escala_titulo"],
+    if not s.get("dibujo"):
+        # sin dibujo: se mide el bloque (título + texto) y se baja para que quede centrado en lo que sobra
+        prueba = Lienzo(c.g, c.n, c.total)
+        fin_p = prueba.texto(s["titulo"], (c.x0, y, c.x1, y + 330), c.p["titulo"], 118 * c.p["escala_titulo"], interlineado=1.05)
+        if s.get("texto"):
+            fin_p = prueba.texto(s["texto"], (c.x0, fin_p + 80, c.x1, c.y1 - 20), c.p["texto"], 60, enfasis="color", interlineado=1.38)
+        y += max(0, (c.y1 - 40 - fin_p) * 0.45)
+    fin = c.texto(s["titulo"], (c.x0, y, c.x1, y + 330), c.p["titulo"], (108 if s.get("dibujo") else 118) * c.p["escala_titulo"],
                   interlineado=1.05)
     c.d.line([c.x0, fin + 34, c.x0 + 120, fin + 34], fill=c.acento, width=6)
     if s.get("texto"):
-        c.texto(s["texto"], (c.x0, fin + 80, c.x1, c.y1 - 20), c.p["texto"], 56, c.suave,
+        c.texto(s["texto"], (c.x0, fin + 80, c.x1, c.y1 - 20), c.p["texto"], 56 if s.get("dibujo") else 60, c.suave,
                 enfasis="color", interlineado=1.38)
     c.pie()
 
@@ -372,8 +413,8 @@ def s_antes_despues(c, s):
         c.d.rounded_rectangle(caja, radius=28, fill=relleno)
         f = fuente(c.p["fuerte"], 32)
         c.d.text((c.x0 + 36, y + 28), eti.upper(), font=f, fill=c.suave if i == 0 else c.acento)
-        c.texto(txt, (c.x0 + 36, y + 84, c.x1 - 36, y + mitad - 28), c.p["texto"], 46, enfasis="color",
-                interlineado=1.3)
+        c.texto(txt, (c.x0 + 36, y + 90, c.x1 - 36, y + mitad - 28), c.p["texto"], 58, enfasis="color",
+                interlineado=1.28)
         y += mitad + 30
     c.pie()
 
@@ -383,6 +424,8 @@ def s_cierre(c, s):
     c.img.paste(Image.new("RGBA", c.img.size, c.acento if plant != "bloque" else c.acento), (0, 0))
     c.d = ImageDraw.Draw(c.img)
     claro = c.fondo if plant != "bloque" else (17, 17, 17, 255)
+    if contraste(claro, c.acento) < 3 and contraste(c.tinta, c.acento) > contraste(claro, c.acento):
+        claro = c.tinta                                         # acento claro (p. ej. verde lima): texto oscuro
     if s.get("dibujo"):
         c.acento, c.fondo = claro, c.acento  # en el cierre el dibujo va en el color claro
         c.dibujo(s["dibujo"], (c.x0, c.y0, c.x0 + 300, c.y0 + 300))
@@ -399,23 +442,224 @@ def s_cierre(c, s):
     c.pie(color=claro)
 
 
+def _abre(ruta, que):
+    if not ruta or not os.path.exists(ruta):
+        raise SystemExit(f"FALTA_IMAGEN {que}: no existe «{ruta}». Revisa la ruta en el guion.")
+    return Image.open(ruta).convert("RGBA")
+
+
+def _titulo_arriba(c, s, alto=300, tam=96):
+    fin = c.y0
+    if s.get("titulo"):
+        fin = c.texto(s["titulo"], (c.x0, c.y0, c.x1, c.y0 + alto), c.p["titulo"], tam * c.p["escala_titulo"],
+                      interlineado=1.05)
+    if s.get("texto"):
+        fin = c.texto(s["texto"], (c.x0, fin + 24, c.x1, fin + 190), c.p["texto"], 44, c.suave,
+                      enfasis="color", interlineado=1.3)
+    return fin
+
+
+def s_captura(c, s):
+    """Una captura real (de una app, una web, un chat) dentro de un iPhone. Lo que más credibilidad da."""
+    c.decorar_fondo()
+    fin = _titulo_arriba(c, s, 260, 88)
+    pant = _abre(s.get("captura"), "captura")
+    alto = int(min(c.y1 - fin - 50, (c.x1 - c.x0) / 0.4925 * 0.98))
+    tel = marcos.iphone(pant, alto)
+    x = int((c.W - tel.width) / 2)
+    c.img.alpha_composite(tel, (x, int(fin + 30)))
+    c.pie()
+
+
+def s_post(c, s):
+    """Una publicación tipo X/Threads (tuya o una cita con fuente), en tarjeta blanca realista."""
+    c.decorar_fondo()
+    fin = _titulo_arriba(c, s, 220, 84) if s.get("titulo") else c.y0 + 40
+    x0, x1 = c.x0, c.x1
+    f_nom = fuente("InstrumentSans-Bold.ttf", 40)
+    f_usr = fuente("InstrumentSans-Regular.ttf", 34)
+    f_txt, ls, tam = ajusta(s["post"], "InstrumentSans-Regular.ttf", 62, x1 - x0 - 96, 640, 1.32, 34)
+    alto = 96 + 110 + len(ls) * tam * 1.32 + 70
+    y0 = fin + max(40, (c.y1 - fin - alto) / 2.4) if s.get("titulo") else c.y0 + (c.y1 - c.y0 - alto) / 2
+    sombra = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(sombra).rounded_rectangle([x0 + 6, y0 + 14, x1 + 6, y0 + alto + 14], radius=40, fill=(0, 0, 0, 55))
+    c.img.alpha_composite(sombra.filter(ImageFilter.GaussianBlur(18)))
+    c.d.rounded_rectangle([x0, y0, x1, y0 + alto], radius=40, fill=(255, 255, 255), outline=(225, 228, 232), width=2)
+    ax, ay, r = x0 + 48, y0 + 48, 50
+    if s.get("avatar") and os.path.exists(s["avatar"]):
+        av = Image.open(s["avatar"]).convert("RGBA")
+        lado = min(av.size); av = av.crop(((av.width - lado) // 2, (av.height - lado) // 2,
+                                          (av.width + lado) // 2, (av.height + lado) // 2)).resize((2 * r, 2 * r))
+        m = Image.new("L", av.size, 0); ImageDraw.Draw(m).ellipse([0, 0, 2 * r, 2 * r], fill=255)
+        c.img.paste(av, (int(ax), int(ay)), m)
+    else:
+        c.d.ellipse([ax, ay, ax + 2 * r, ay + 2 * r], fill=c.acento)
+        ini = (s.get("nombre") or "?")[:1].upper()
+        fi = fuente("InstrumentSans-Bold.ttf", 46)
+        c.d.text((ax + r - fi.getlength(ini) / 2, ay + 20), ini, font=fi, fill=(255, 255, 255))
+    c.d.text((ax + 2 * r + 24, ay + 6), s.get("nombre", ""), font=f_nom, fill=(15, 20, 25))
+    c.d.text((ax + 2 * r + 24, ay + 54), s.get("usuario", ""), font=f_usr, fill=(83, 100, 113))
+    y = ay + 2 * r + 40
+    for l in ls:
+        c.d.text((x0 + 48, y), " ".join(p for p, _, _ in l), font=f_txt, fill=(15, 20, 25))
+        y += tam * 1.32
+    c.pie()
+
+
+def s_pasos(c, s):
+    """Paso a paso con números unidos por una línea."""
+    c.decorar_fondo()
+    fin = _titulo_arriba(c, {"titulo": s.get("titulo")}, 280, 92)
+    items = s.get("items", [])
+    zona = c.y1 - fin - 70
+    alto = min(zona / max(1, len(items)), 300)
+    y = fin + 60 + (zona - alto * len(items)) / 3
+    r = 40
+    cx = c.x0 + r
+    if len(items) > 1:
+        c.d.line([cx, y + r, cx, y + alto * (len(items) - 1) + r], fill=mezcla(c.acento, c.fondo, 0.55), width=6)
+    fn = fuente(c.p["fuerte"], 42)
+    for i, it in enumerate(items):
+        c.d.ellipse([cx - r, y, cx + r, y + 2 * r], fill=c.acento)
+        t = str(i + 1)
+        c.d.text((cx - fn.getlength(t) / 2, y + 14), t, font=fn, fill=c.fondo if contraste(c.fondo, c.acento) >= 2 else c.tinta)
+        cab, _, det = it.partition(":")
+        fin_i = c.texto(cab.strip() if det else it, (c.x0 + 2 * r + 34, y + 2, c.x1, y + (alto * 0.5 if det else alto - 10)),
+                        c.p["fuerte"], 62, interlineado=1.12, minimo=34)
+        if det:
+            c.texto(det.strip(), (c.x0 + 2 * r + 34, fin_i + 8, c.x1, y + alto - 18), c.p["texto"], 48, c.suave,
+                    enfasis="color", interlineado=1.25, minimo=26)
+        y += alto
+    c.pie()
+
+
+def s_comparacion(c, s):
+    """Dos columnas (p. ej. «Sin IA» / «Con IA»): filas con ✗ y ✓."""
+    c.decorar_fondo()
+    fin = _titulo_arriba(c, {"titulo": s.get("titulo")}, 260, 88)
+    filas = s.get("filas", [])
+    y = fin + 50
+    mid = (c.x0 + c.x1) / 2
+    fh = fuente(c.p["fuerte"], 40)
+    alto = min((c.y1 - y - 130) / max(1, len(filas)), 250)
+    c.d.rounded_rectangle([mid + 8, y - 10, c.x1, y + 100 + alto * len(filas)], radius=30, fill=mezcla(c.acento, c.fondo, 0.86))
+    for x, t, col in ((c.x0 + 10, s.get("col_a", "Antes"), c.suave), (mid + 36, s.get("col_b", "Ahora"), c.acento_txt)):
+        c.d.text((x, y + 10), t.upper(), font=fh, fill=col)
+    y += 100
+    for a, b in filas:
+        for x, txt, ok in ((c.x0 + 10, a, False), (mid + 36, b, True)):
+            col = c.acento_txt if ok else mezcla(c.tinta, c.fondo, 0.35)
+            if ok:
+                c.d.line([x, y + 26, x + 12, y + 40, x + 34, y + 10], fill=col, width=7, joint="curve")
+            else:
+                c.d.line([x + 4, y + 12, x + 28, y + 36], fill=col, width=6)
+                c.d.line([x + 28, y + 12, x + 4, y + 36], fill=col, width=6)
+            c.texto(txt, (x + 56, y, (mid - 24) if not ok else c.x1 - 24, y + alto - 24),
+                    c.p["fuerte"] if ok else c.p["texto"], 52, c.tinta if ok else mezcla(c.tinta, c.fondo, 0.3), interlineado=1.2, minimo=28)
+        y += alto
+    c.pie()
+
+
+def s_logos(c, s):
+    """Las herramientas o apps que se mencionan, con su logo real (ver imagenes.py logo)."""
+    c.decorar_fondo()
+    fin = _titulo_arriba(c, s, 300, 92)
+    items = s.get("logos", [])[:6]
+    cols = 3 if len(items) > 4 else 2 if len(items) > 1 else 1
+    filas = math.ceil(len(items) / cols)
+    gap = 36
+    lado = min((c.x1 - c.x0 - gap * (cols - 1)) / cols, (c.y1 - fin - 80 - gap * (filas - 1)) / filas - 70)
+    ancho_tot = cols * lado + (cols - 1) * gap
+    fn = fuente(c.p["fuerte"], 36)
+    y = fin + 60
+    for i, it in enumerate(items):
+        col, fil = i % cols, i // cols
+        en_fila = min(cols, len(items) - fil * cols)
+        x0 = (c.W - (en_fila * lado + (en_fila - 1) * gap)) / 2 + col * (lado + gap)
+        y0 = y + fil * (lado + 70 + gap)
+        c.d.rounded_rectangle([x0, y0, x0 + lado, y0 + lado], radius=int(lado * 0.2), fill=(255, 255, 255),
+                              outline=mezcla(c.tinta, c.fondo, 0.85), width=2)
+        lg = _abre(it.get("img"), "logo " + it.get("nombre", ""))
+        lg.thumbnail((int(lado * 0.62), int(lado * 0.62)), Image.LANCZOS)
+        c.img.alpha_composite(lg, (int(x0 + (lado - lg.width) / 2), int(y0 + (lado - lg.height) / 2)))
+        n = it.get("nombre", "")
+        c.d.text((x0 + lado / 2 - fn.getlength(n) / 2, y0 + lado + 16), n, font=fn, fill=c.tinta)
+    c.pie()
+
+
 TIPOS = dict(portada=s_portada, punto=s_punto, lista=s_lista, dato=s_dato, cita=s_cita,
-             antes_despues=s_antes_despues, cierre=s_cierre)
+             antes_despues=s_antes_despues, cierre=s_cierre, captura=s_captura, post=s_post, pasos=s_pasos,
+             comparacion=s_comparacion, logos=s_logos)
+
+
+def _sin_acento(t):
+    import unicodedata
+    return "".join(ch for ch in unicodedata.normalize("NFD", str(t).lower()) if unicodedata.category(ch) != "Mn").replace("-", "_").replace(" ", "_")
+
+
+def revisar(guion):
+    """Antes de dibujar: tipos válidos e imágenes que existen. Así nunca quedan láminas a medias."""
+    problemas, avisos = [], []
+    for i, s in enumerate(guion.get("slides", []), 1):
+        t = _sin_acento(s.get("tipo", "punto"))
+        t = {"antesdespues": "antes_despues", "comparar": "comparacion", "paso": "pasos", "logo": "logos"}.get(t, t)
+        if t not in TIPOS:
+            problemas.append(("ERROR", f"lámina {i}: el tipo «{s.get('tipo')}» no existe. Usa uno de: {', '.join(TIPOS)}"))
+        else:
+            s["tipo"] = t
+        for k in ("foto", "captura", "avatar"):
+            if s.get(k) and not os.path.exists(s[k]):
+                problemas.append(("FALTA_IMAGEN", f"lámina {i}: no existe la imagen «{s[k]}» ({k})"))
+        for it in s.get("logos", []):
+            if not it.get("img") or not os.path.exists(it["img"]):
+                problemas.append(("FALTA_IMAGEN", f"lámina {i}: no existe el logo de «{it.get('nombre', '?')}» («{it.get('img')}»)"))
+        if t == "captura" and not s.get("captura"):
+            problemas.append(("FALTA_IMAGEN", f"lámina {i}: la lámina captura necesita \"captura\": <imagen>"))
+    m = guion.get("marca", {})
+    if m.get("logo") and not os.path.exists(m["logo"]):
+        avisos.append(f"no existe el logo de la marca «{m['logo']}»: sale sin logo")
+    for k, v in (m.get("fuentes") or {}).items():
+        if v and not os.path.exists(v):
+            problemas.append(("FALTA_IMAGEN", f"no existe la letra «{v}» ({k})"))
+    return problemas, avisos
 
 
 def render(guion, salida):
+    problemas, avisos = revisar(guion)
+    for a in avisos:
+        print("AVISO " + a)
+    if problemas:
+        for etiqueta, texto in problemas:
+            print(f"{etiqueta} {texto}")
+        raise SystemExit(2)
     os.makedirs(salida, exist_ok=True)
     formatos = guion.get("formato", "instagram")
-    formatos = ["instagram", "tiktok"] if formatos == "ambos" else [formatos]
+    formatos = ["instagram", "tiktok"] if formatos == "ambos" else (
+        ["instagram", "tiktok", "linkedin"] if formatos == "todos" else [formatos])
     rutas = []
     for fmt in formatos:
         g = dict(guion, _formato=fmt)
         slides = guion["slides"]
         carpeta = os.path.join(salida, fmt) if len(formatos) > 1 else salida
         os.makedirs(carpeta, exist_ok=True)
+        for viejo in os.listdir(carpeta):
+            if re.match(r"\d\d\.png$", viejo):
+                os.remove(os.path.join(carpeta, viejo))
         for i, s in enumerate(slides, 1):
             c = Lienzo(g, i, len(slides))
             TIPOS[s.get("tipo", "punto")](c, s)
+            if fmt == "tiktok":
+                # TikTok es más alto: si la lámina deja mucho vacío abajo, se baja todo para que quede
+                # centrado en la pantalla (sin tocar la zona de los botones ni la de la descripción)
+                base = Lienzo(g, i, len(slides)); base.decorar_fondo()
+                caja = ImageChops.difference(c.img.convert("RGB"), base.img.convert("RGB")).crop(
+                    (0, 0, c.W, int(c.y1) - 4)).getbbox()
+                if caja:
+                    libre = c.y1 - 30 - caja[3]
+                    if libre > 120:
+                        c = Lienzo(g, i, len(slides))
+                        c.y0 += libre * 0.5
+                        TIPOS[s.get("tipo", "punto")](c, s)
             ruta = os.path.join(carpeta, f"{i:02d}.png")
             c.img.convert("RGB").save(ruta, optimize=True)
             rutas.append(ruta)
@@ -429,6 +673,9 @@ def render(guion, salida):
         for k, im in enumerate(ims):
             hoja.paste(im.resize((tw, th), Image.LANCZOS), (20 + (k % cols) * (tw + 20), 20 + (k // cols) * (th + 20)))
         hoja.save(os.path.join(carpeta, "_revision.jpg"), quality=85)
+        if fmt == "linkedin" or guion.get("pdf"):
+            ims[0].convert("RGB").save(os.path.join(carpeta, "carrusel.pdf"), save_all=True,
+                                       append_images=[i.convert("RGB") for i in ims[1:]], resolution=150)
     return rutas
 
 
@@ -436,19 +683,36 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(1)
-    with open(sys.argv[1], encoding="utf-8") as fh:
-        guion = json.load(fh)
+    try:
+        with open(sys.argv[1], encoding="utf-8") as fh:
+            guion = json.load(fh)
+    except json.JSONDecodeError as e:
+        print(f"ERROR el guion tiene un error de escritura en la línea {e.lineno}, columna {e.colno} ({e.msg}). Corrígelo y repite.")
+        sys.exit(2)
+    except OSError:
+        print(f"ERROR no existe el guion «{sys.argv[1]}»."); sys.exit(2)
     salida = sys.argv[2] if len(sys.argv) > 2 else guion.get("salida", "carrusel")
     base = os.path.dirname(os.path.abspath(sys.argv[1]))
     # rutas relativas (logo, fotos) se buscan junto al guion
     m = guion.get("marca", {})
     if m.get("logo") and not os.path.isabs(m["logo"]):
         m["logo"] = os.path.join(base, m["logo"])
-    for k, v in m.get("fuentes", {}).items():
+    m["fuentes"] = {k: v for k, v in m.get("fuentes", {}).items() if not k.startswith("_")}
+    for k, v in m["fuentes"].items():
         if v and not os.path.isabs(v):
             m["fuentes"][k] = os.path.join(base, v)
     for s in guion["slides"]:
-        if s.get("foto") and not os.path.isabs(s["foto"]):
-            s["foto"] = os.path.join(base, s["foto"])
+        for k in ("foto", "captura", "avatar"):
+            if s.get(k) and not os.path.isabs(os.path.expanduser(s[k])):
+                s[k] = os.path.join(base, s[k])
+            elif s.get(k):
+                s[k] = os.path.expanduser(s[k])
+        for it in s.get("logos", []):
+            if it.get("img") and not os.path.isabs(os.path.expanduser(it["img"])):
+                it["img"] = os.path.join(base, it["img"])
     for r in render(guion, salida):
         print(r)
+    try:
+        import version; version.avisar()
+    except Exception:
+        pass

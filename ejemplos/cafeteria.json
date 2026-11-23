@@ -1,60 +1,242 @@
 {
-  "marca": {"nombre": "Café Raíz", "usuario": "@caferaiz", "colores": {"fondo": "#F4EFE6", "tinta": "#2B1D14", "acento": "#B5442B"}},
-  "plantilla": "editorial",
-  "formato": "instagram",
-  "slides": [
-    {"tipo": "portada", "etiqueta": "Guía rápida", "titulo": "5 señales de que tu café está *mal hecho*",
-     "subtitulo": "La número 3 la hace casi todo el mundo en casa.",
-     "dibujo": [
-       ["elipse", 4, 88, 96, 98, "claro", "none"],
-       ["poligono", [20, 50, 44, 50, 48, 58, 44, 92, 20, 92, 16, 58], "acento", "tinta"],
-       ["poligono", [22, 30, 42, 30, 46, 50, 18, 50], "claro", "tinta"],
-       ["poligono", [28, 22, 36, 22, 38, 30, 26, 30], "tinta", "tinta"],
-       ["curva", [44, 36, 52, 34, 54, 42], "none", "tinta"],
-       ["curva", [16, 62, 8, 66, 10, 80, 16, 82], "none", "tinta"],
-       ["rect", 58, 64, 88, 92, 6, "fondo", "tinta"],
-       ["arco", 90, 76, 7, 270, 90, "tinta"],
-       ["rect", 60, 64, 86, 70, 3, "acento", "none"],
-       ["curva", [66, 58, 63, 50, 68, 44, 65, 36], "none", "suave"],
-       ["curva", [76, 58, 73, 50, 78, 44, 75, 36], "none", "suave"],
-       ["texto", 50, 6, "?", 16, "acento"]
-     ]},
-    {"tipo": "punto", "num": 1, "titulo": "Sabe *amargo* y quemado",
-     "texto": "El agua hirviendo quema el café. Lo ideal es *entre 90 y 96 °C*: deja reposar el agua 30 segundos después de hervir.",
-     "dibujo": [
-       ["rect", 20, 30, 62, 88, 10, "fondo", "tinta"],
-       ["arco", 66, 58, 12, 270, 90, "tinta"],
-       ["rect", 22, 30, 60, 40, 4, "acento", "none"],
-       ["curva", [30, 24, 26, 16, 32, 10, 28, 2], "none", "acento"],
-       ["curva", [44, 24, 40, 16, 46, 10, 42, 2], "none", "acento"],
-       ["rect", 80, 20, 92, 76, 6, "fondo", "tinta"],
-       ["circulo", 86, 82, 9, "acento", "tinta"],
-       ["rect", 84, 30, 88, 80, 2, "acento", "none"]
-     ]},
-    {"tipo": "punto", "num": 2, "titulo": "Sabe *ácido* y aguado",
-     "texto": "Le falta tiempo o el molido es muy grueso. Muele un poco más fino y prueba otra vez.",
-     "dibujo": [
-       ["curva", [50, 6, 70, 40, 74, 62, 62, 84, 38, 84, 26, 62, 30, 40], "claro", "tinta"],
-       ["curva", [38, 52, 36, 64, 44, 72], "none", "fondo"],
-       ["circulo", 82, 22, 6, "acento", "none"], ["circulo", 16, 30, 4, "acento", "none"],
-       ["circulo", 86, 70, 3, "suave", "none"]
-     ]},
-    {"tipo": "antes_despues", "titulo": "La 3: *café molido* de hace semanas",
-     "antes": "Bolsa abierta en la alacena, aroma casi nulo.",
-     "despues": "Moler justo antes de preparar: *el aroma se nota* desde la primera taza."},
-    {"tipo": "lista", "titulo": "Las otras dos",
-     "items": ["Taza fría: baja la temperatura de golpe", "Cafetera sucia: *los aceites viejos* amargan todo"],
-     "dibujo": [
-       ["rect", 18, 20, 82, 34, 5, "tinta", "tinta"],
-       ["rect", 24, 34, 76, 90, 6, "claro", "tinta"],
-       ["rect", 34, 54, 66, 86, 4, "fondo", "tinta"],
-       ["curva", [36, 74, 46, 70, 56, 76, 64, 72], "none", "acento"],
-       ["circulo", 44, 64, 3, "acento", "none"], ["circulo", 58, 62, 2.5, "acento", "none"],
-       ["circulo", 70, 27, 3, "acento", "none"]
-     ]},
-    {"tipo": "cierre", "titulo": "Guárdalo para tu *próximo café*", "cta": "Síguenos para más",
-     "dibujo": [
-       ["poligono", [26, 8, 74, 8, 74, 92, 50, 72, 26, 92], "acento", "none"]
-     ]}
-  ]
+ "marca": {
+  "nombre": "Café Raíz",
+  "usuario": "@caferaiz",
+  "colores": {
+   "fondo": "#F4EFE6",
+   "tinta": "#2B1D14",
+   "acento": "#B5442B"
+  }
+ },
+ "plantilla": "editorial",
+ "formato": "instagram",
+ "slides": [
+  {
+   "tipo": "portada",
+   "etiqueta": "Guía rápida",
+   "titulo": "Tu café está *mal hecho* (y es fácil de arreglar)",
+   "subtitulo": "3 señales y el truco que casi nadie hace en casa.",
+   "foto": "img/cafe.jpg"
+  },
+  {
+   "tipo": "punto",
+   "num": 1,
+   "titulo": "Sabe *amargo* y quemado",
+   "texto": "El agua hirviendo quema el café. Lo ideal es *entre 90 y 96 °C*: deja reposar el agua 30 segundos después de hervir.",
+   "dibujo": [
+    [
+     "rect",
+     20,
+     30,
+     62,
+     88,
+     10,
+     "fondo",
+     "tinta"
+    ],
+    [
+     "arco",
+     66,
+     58,
+     12,
+     270,
+     90,
+     "tinta"
+    ],
+    [
+     "rect",
+     22,
+     30,
+     60,
+     40,
+     4,
+     "acento",
+     "none"
+    ],
+    [
+     "curva",
+     [
+      30,
+      24,
+      26,
+      16,
+      32,
+      10,
+      28,
+      2
+     ],
+     "none",
+     "acento"
+    ],
+    [
+     "curva",
+     [
+      44,
+      24,
+      40,
+      16,
+      46,
+      10,
+      42,
+      2
+     ],
+     "none",
+     "acento"
+    ],
+    [
+     "rect",
+     80,
+     20,
+     92,
+     76,
+     6,
+     "fondo",
+     "tinta"
+    ],
+    [
+     "circulo",
+     86,
+     82,
+     9,
+     "acento",
+     "tinta"
+    ],
+    [
+     "rect",
+     84,
+     30,
+     88,
+     80,
+     2,
+     "acento",
+     "none"
+    ]
+   ]
+  },
+  {
+   "tipo": "punto",
+   "num": 2,
+   "titulo": "Sabe *ácido* y aguado",
+   "texto": "Le falta tiempo o el molido es muy grueso. Muele un poco más fino y prueba otra vez.",
+   "dibujo": [
+    [
+     "curva",
+     [
+      50,
+      6,
+      70,
+      40,
+      74,
+      62,
+      62,
+      84,
+      38,
+      84,
+      26,
+      62,
+      30,
+      40
+     ],
+     "claro",
+     "tinta"
+    ],
+    [
+     "curva",
+     [
+      38,
+      52,
+      36,
+      64,
+      44,
+      72
+     ],
+     "none",
+     "fondo"
+    ],
+    [
+     "circulo",
+     82,
+     22,
+     6,
+     "acento",
+     "none"
+    ],
+    [
+     "circulo",
+     16,
+     30,
+     4,
+     "acento",
+     "none"
+    ],
+    [
+     "circulo",
+     86,
+     70,
+     3,
+     "suave",
+     "none"
+    ]
+   ]
+  },
+  {
+   "tipo": "antes_despues",
+   "titulo": "03 · El *café molido* de hace semanas",
+   "antes": "Bolsa abierta en la alacena, aroma casi nulo.",
+   "despues": "Moler justo antes de preparar: *el aroma se nota* desde la primera taza."
+  },
+  {
+   "tipo": "pasos",
+   "titulo": "Tu café *perfecto* en 3 pasos",
+   "items": [
+    "Muele justo antes: el aroma dura minutos, no semanas",
+    "Agua a 92 °C: hierve y espera 30 segundos",
+    "Taza caliente: enjuágala con agua caliente antes"
+   ]
+  },
+  {
+   "tipo": "comparacion",
+   "titulo": "Lo que casi todos hacen *vs. lo que sirve*",
+   "col_a": "Casi todos",
+   "col_b": "Lo que sirve",
+   "filas": [
+    [
+     "Agua recién hervida",
+     "Esperar 30 segundos"
+    ],
+    [
+     "Café molido de hace semanas",
+     "Moler al momento"
+    ],
+    [
+     "Taza fría",
+     "Taza caliente"
+    ]
+   ]
+  },
+  {
+   "tipo": "cierre",
+   "titulo": "Guárdalo para tu *próximo café*",
+   "cta": "Síguenos para más",
+   "dibujo": [
+    [
+     "poligono",
+     [
+      26,
+      8,
+      74,
+      8,
+      74,
+      92,
+      50,
+      72,
+      26,
+      92
+     ],
+     "acento",
+     "none"
+    ]
+   ]
+  }
+ ]
 }

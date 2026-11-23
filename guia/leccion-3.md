@@ -5,32 +5,38 @@
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   CARRUSEL PRO
-  ▰▰▰  Lección 3 de 3 · Listo para subir
+  ▰▰▰  Paso 3 de 3 · Listo para subir
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-"Lo que más se le escapa a la gente: hacen un carrusel bonito y lo suben con una descripción de prisa. Y a veces lo necesitan en Instagram y en TikTok, que miden distinto. Te dejo todo listo."
+"Lo que más se le escapa a la gente: hacen un carrusel bonito y lo suben con una descripción de prisa, y solo en una red. Te lo dejo listo para todas."
 
 **ACCIÓN (sin preguntar), en silencio:**
-1. **Las dos medidas:** cambia `"formato"` a `"ambos"` y renderiza. Quedan `instagram/` (vertical 4:5) y `tiktok/` (pantalla completa, con el texto lejos de los botones de la derecha). Míralas.
-2. **La descripción** (Paso 5 del SKILL.md): gancho en la primera línea (≤ 70 caracteres), 2 o 3 frases de valor, un CTA que siempre aplique según su `objetivo` y de 3 a 6 hashtags. Guárdala en `descripcion.txt` junto a las láminas.
-3. **Texto alternativo** de la portada (una línea, para quien no ve la imagen).
-4. **Su marca guardada:** en Claude Code, en `~/.carrusel-pro/marca.json` (la próxima vez solo pregunta "¿uso tu marca guardada?"). En la app de Claude, prepara el bloque de su marca para pegarlo en las instrucciones de un Proyecto.
+1. **Todas las medidas:** `"formato": "todos"` y renderiza: `instagram/` (4:5), `tiktok/` (pantalla completa, lejos de los botones) y `linkedin/` (con `carrusel.pdf`, que es como LinkedIn muestra los carruseles). Míralas.
+2. **La descripción** (Paso 6 del SKILL.md) según su `objetivo`, en `descripcion.txt`, y la vista de TikTok (`vista.py <…>/tiktok --guion … --red tiktok`).
+3. **Texto alternativo** de la portada en una línea.
+4. **Su marca guardada:** Claude Code → `~/.carrusel-pro/marca.json`. App de Claude → el bloque para pegar en un Proyecto.
 
 **MENSAJE obligatorio (cierra el turno):**
-- **Resultado:** las dos carpetas (`instagram/` y `tiktok/`) y "abre una lámina de cada una en tu celular para ver la diferencia".
-- **La descripción**, completa, lista para copiar.
-- Su marca: "Ya quedó guardada: la próxima vez no te pregunto tus colores." (En la app: el bloque y "pégalo en un Proyecto de Claude y ahí ya no te lo vuelvo a preguntar".)
+- **Resultado:** la vista de TikTok junto a la de Instagram, y las 3 carpetas en una línea.
+- **La descripción** completa, lista para copiar.
+- **Cómo subirlo:** "En tu celular: Instagram **+ → Publicación → selecciona varias**; TikTok **+ → Fotos**; LinkedIn **Empezar una publicación → + → Añadir un documento** con el PDF."
+- Su marca: "Ya quedó guardada: la próxima vez no te pregunto tus colores."
+
+**Mejora opcional (una sola vez, con botones, solo lo que exista):** revisa qué tiene.
+- Google Drive en la compu o su conector → "¿Te lo guardo en tu Drive para abrirlo directo en el celular?" · **Sí, en mi Drive** · **No, así está bien**.
+- Conector de Canva o Adobe Express → "¿Te lo dejo también en Canva para editarlo ahí?" · **Sí** · **No**.
+- Si no tiene ninguno: "Si algún día quieres editarlo en Canva o guardarlo en Drive, se conectan gratis en **Configuración → Conectores**." Sin botones.
+Con sí, sigue "Conectores" del SKILL.md, y avisa qué hiciste.
 
 **Cierre (despedida, no manual), en el mismo mensaje:**
-- **Lo que lograste** (3 viñetas: tu primer carrusel, con tu marca y como tú lo quisiste, listo para Instagram y TikTok con su descripción).
+- **Lo que lograste** (3 viñetas: tu primer carrusel, con tu marca, listo para Instagram, TikTok y LinkedIn con su descripción).
 - "Desde ahora la skill hace todo esto **sola**, sin que le digas cada paso. Solo dile:"
-  > **Usando la skill carrusel-pro, hazme un carrusel sobre [tu tema]**
+  > **Usando la skill dak-carrusel-pro, hazme un carrusel sobre [tu tema]**
 - "Si quieres la siguiente herramienta gratis, sigue a @dakexplica en TikTok e Instagram."
 
 Guarda `"leccion": "terminada"`. Fin de la guía.
 
-## Mejoras opcionales (solo si pregunta cómo hacerlo mejor)
-- **Una serie de 5 para la semana:** "Usando la skill carrusel-pro, hazme una serie de 5 carruseles para mi semana" (Paso 6 del SKILL.md: 5 temas con ángulos distintos y un calendario).
-- **De un texto que ya tienes:** pégale un artículo, un PDF o el link de un video y lo convierte en carrusel.
-- **Canva o Adobe Express:** si los conectas (Configuración → Conectores), te deja el carrusel editable ahí.
+## Si pregunta cómo sacarle más (solo si pregunta)
+- **Una serie de 5 para la semana:** «Usando la skill dak-carrusel-pro, hazme 5 carruseles para mi semana».
+- **De algo que ya tienes:** pégale un artículo, un PDF o un link y lo convierte en carrusel.

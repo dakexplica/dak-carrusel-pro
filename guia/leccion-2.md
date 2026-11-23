@@ -1,43 +1,40 @@
-# Lección 2 · Con tu marca, y como tú lo quieres (~2 min)
+# Lección 2 · Con tu marca (~2 min)
 
-> Guion para Claude. Lee `guia/estilo.md`. Retoma lo que te dijo en la lección 1 (`tema`, `destino`, `objetivo`).
+> Guion para Claude. Lee `guia/estilo.md`. Retoma lo que te dijo en el paso 1 (`tema`, `destino`, `objetivo`).
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   CARRUSEL PRO
-  ▰▰▱  Lección 2 de 3 · Con tu marca
+  ▰▰▱  Paso 2 de 3 · Con tu marca
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 "Tu carrusel ya funciona. Ahora que se vea **tuyo**: que alguien lo vea en el feed y sepa que es de [su negocio / ti] sin leer el nombre."
 
-**BOTONES** · "¿Cómo sacamos tu marca?"
-- **De mi web o mi Instagram (recomendado)** — "me pasas el link o una captura y saco tus colores, tu tipo de letra y tu tono. No necesito tu contraseña ni entrar a tu cuenta"
-- **Te paso mis colores y mi logo** — "códigos de color o una foto de donde salen, y tu logo en PNG si lo tienes"
-- **Invéntame una** — "te propongo 3 marcas distintas y eliges viendo tu portada en cada una"
+**BOTONES** · "¿De dónde saco tu marca? Nunca necesito tu contraseña ni entrar a tu cuenta."
+- **De mi página web (recomendado)** — "me pasas el link y saco tu logo, tus colores, tu letra y hasta fotos tuyas"
+- **De mi Instagram** — "me mandas una captura de tu perfil y saco tus colores (Instagram no deja leer perfiles desde fuera)"
+- **Invéntame una** — "te propongo 3 marcas y eliges viendo tu portada en cada una"
+- **Te paso mis colores y mi logo** — "códigos de color o una foto de donde salen, y tu logo en PNG"
 
-**ALTO.** Si eligió link o datos, pídelos una sola vez (una ruta o link, ejemplo genérico `/Users/tu-nombre/Desktop/logo.png`). **ALTO.**
+**ALTO.** Pide lo que haga falta una sola vez (el link, o la captura arrastrándola al chat; rutas de ejemplo genéricas `/Users/tu-nombre/Desktop/perfil.png`). Si dijo "el de ejemplo" en el paso 1 y no tiene nada a la mano, ofrece **Invéntame una**. **ALTO.**
 
-**Aviso antes:** "Saco tu marca y dibujo tu portada [con ella / en 3 versiones]. Tarda menos de un minuto."
+**Aviso antes:** "Saco tu marca y vuelvo a dibujar tu carrusel con ella. Menos de un minuto."
 
-**ACCIÓN:** sigue la Ronda 2 del SKILL.md. Con "Invéntame una", renderiza **solo la portada** en las 3 identidades (3 guiones de una lámina) y júntalas en una sola imagen lado a lado (`comparar-marcas.jpg`). Con su web o sus datos, renderiza la portada con su marca. **Míralas** antes de enseñarlas.
+**ACCIÓN:** Paso 2 del SKILL.md (`marca.py web` o `marca.py capturas`; con "Invéntame una", 3 portadas lado a lado). Si sacó fotos de su página, úsalas en la portada. Renderiza **todo el carrusel** con su marca y su @usuario, saca la vista y arma una imagen `antes-despues.jpg` con la portada sin marca a la izquierda y con marca a la derecha. **Míralas** antes de enseñarlas.
 
 **MENSAJE obligatorio (cierra el turno):**
-- **Resultado:** la imagen y en una línea qué marca saqué o qué tiene cada opción ("1 · Terracota: cálida y artesanal · 2 · …").
+- **Resultado:** `marca.jpg` (lo que saqué: logo, colores y su letra, dicha por su nombre; si es una parecida porque la suya es de pago, dilo) y `antes-despues.jpg`, luego la vista nueva.
 - Con 3 opciones: "¿Cuál te gusta? Responde 1, 2 o 3." Con su marca: "¿Así se siente como tú? Responde «sí» o dime qué no te late."
 
-**ALTO.** Con su respuesta, renderiza **todo el carrusel** con esa marca y míralo.
+**ALTO.** Si eligió o corrigió, aplícalo y míralo.
 
-**BOTONES** · "Tu carrusel ya tiene tu marca. ¿Le cambio algo?" (la descripción de cada opción dice qué pasa)
-- **Así está perfecto** — "pasamos a la última lección"
+**BOTONES** · "Ya tiene tu marca. ¿Le cambio algo? Así de fácil se piden cambios."
+- **Así está perfecto** — "pasamos al último paso"
 - **Un gancho más fuerte** — "reescribo la portada para que den ganas de deslizar"
-- **Otro estilo** — "lo mismo en Editorial, Bloque o Cuaderno"
-- **Otro dibujo** — "cambio la ilustración que no te convenza"
+- **Otra letra o estilo** — "te enseño 3 letras que le van a tu marca, o lo paso a Editorial, Minimal, Bloque o Cuaderno"
+- **Otra imagen** — "cambio la foto o el dibujo que no te convenza"
 
-**ALTO.** Haz el cambio, renderiza, míralo y celébralo en una línea. (Pedir cambios así de fácil es lo que tiene que aprender: díselo.)
+**ALTO.** Haz el cambio, renderiza, míralo y celébralo en una línea.
 
-**Mejora opcional (una sola vez, con botones):** revisa si tiene el conector de **Canva** (o Adobe Express) activo.
-- Si sí: "¿Quieres que también te lo deje en Canva, para editarlo ahí cuando quieras?" · **Sí, en Canva** · **No, así está bien**. Con sí, sigue la "Ruta Canva" del SKILL.md.
-- Si no: "Si algún día quieres editarlos en Canva, se conecta gratis en Claude: **Configuración → Conectores → Canva**. No hace falta para nada de lo que hicimos." Sin botones; sigue.
-
-**Cierre:** **Lo que lograste** (3 viñetas) y "En la última te enseño lo que más se le escapa a la gente: subirlo bien, no solo hacerlo bonito. Escríbeme «sigue»." **ALTO.** Guarda `"leccion": 3`.
+**Cierre:** **Lo que lograste** (3 viñetas) y "En el último paso lo dejamos listo para subir en todas tus redes, con la descripción. Escríbeme «sigue»." **ALTO.** Guarda `"leccion": 3`.

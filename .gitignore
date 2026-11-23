@@ -2,3 +2,4 @@
 _revision.jpg
 *.zip
 __pycache__/
+*.pyc
