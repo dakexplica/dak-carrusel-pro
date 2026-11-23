@@ -30,6 +30,20 @@ Trabajas como diseñador y redactor de redes. **Una sola ronda de preguntas, pro
 | `scripts/paso0.py` · `scripts/version.py` | Revisa lo que falta · aviso de versión nueva |
 | `scripts/iconos.py`, `ejemplos/`, `estilos.jpg`, `guia/` | Cómo dibujar ilustraciones, guiones de ejemplo, los 4 estilos, la mini guía |
 
+## Se adapta a lo que tenga la persona (y en todos los casos, calidad alta)
+
+Nunca exijas nada: usa lo mejor que haya y completa lo que falte. Canva es **opcional** (mucha gente no lo tiene o no puede conectarlo): sin Canva, el resultado también tiene que salir de nivel.
+
+| Lo que tiene | Qué haces |
+|---|---|
+| Su página o su Instagram | Saca su logo, colores y letra (Paso 2) |
+| Sus fotos, logo, notas (revueltos, como sea) | Los junta y ordena; sus fotos van primero (sección «Si trae su propio contenido») |
+| Canva conectado | Ofrece diseñarlo ahí (recomendado): diseño profesional y editable («Ruta Canva») |
+| Sin Canva | Lo diseña Claude con su marca y «vida» (tintes, formas, fotos con sombra); ofrece conectar Canva una sola vez |
+| Sin fotos propias | Fotos libres reales del tema y logos reales de las apps (Paso 4) |
+| Un tema donde no aplican fotos (ideas, procesos, conceptos) | Ilustraciones dibujadas a la medida |
+| Nada (ni marca, ni fotos, ni Canva) | Igual sale completo y bonito: estilo recomendado, fotos o dibujos, y te lo enseña publicado |
+
 ## Primera vez · la mini guía (se ofrece una sola vez)
 
 Al empezar, revisa si existe `~/.dakexplica/dak-carrusel-pro.json`:
@@ -59,7 +73,9 @@ Si no dio el tema, pregúntalo primero en una frase ("¿De qué es tu carrusel? 
 1. **¿Dónde lo publicas?** Instagram (recomendado) · TikTok modo foto · LinkedIn (PDF) · Todo lo anterior
 2. **¿Tu marca?** De mi página o mi Instagram (recomendado: "me pasas el link o una captura; no necesito tu contraseña ni entrar a tu cuenta") · Te paso mis cosas ("tu logo, tus fotos, tus colores o tus notas: en una carpeta, arrastradas al chat o como quieras") · Invéntamela · Sin marca. *Si hay marca guardada (`~/.carrusel-pro/marca.json`), esta pregunta es «¿Uso tu marca guardada, [nombre]?»*
 3. **¿Qué imágenes?** Fotos reales + dibujos (recomendado) · Solo dibujos · Mis fotos · Solo texto  *(si ya mandó sus fotos, no lo preguntes: van las suyas)*
-4. **¿Estilo?** Decide tú (recomendado) · Editorial · Minimal · Bloque · Cuaderno (enseña `estilos.jpg` si duda)
+4. **¿Dónde lo diseño?** (revisa antes si tienes herramientas de Canva en esta sesión)
+   - **Con Canva conectado:** **En Canva (recomendado)** — "el diseño más bonito, con fotos e ilustraciones, y te queda editable en tu Canva" · **Aquí, con Claude** — "lo dibujo yo con tu estilo; sale al momento y no necesita nada" · **Los dos**.
+   - **Sin Canva:** «¿Estilo?» Decide tú (recomendado) · Editorial · Minimal · Bloque · Cuaderno (enseña `estilos.jpg` si duda), y **una sola vez**, al entregar, ofrece conectarlo (ver «Ruta Canva»).
 
 El objetivo (vender, enseñar, marca personal) y el tono los deduces del tema y de su página; no los preguntes.
 
@@ -139,10 +155,20 @@ Muéstralo como lista (lámina por lámina), ajusta lo que pida y sigue. Si dijo
 5. **Guarda su marca:** en Claude Code en `~/.carrusel-pro/marca.json` (la próxima vez solo pregunta "¿uso tu marca guardada?"). En la app, el bloque JSON para pegar en las instrucciones de un Proyecto.
 6. Ofrece ajustes concretos en una línea ("¿Cambio el gancho, el estilo o alguna imagen?") y, **una sola vez**, lo que tenga conectado (abajo).
 
+## Ruta Canva (la versión más bonita; nunca obligatoria)
+
+Con Canva el carrusel sale **con diseño de nivel agencia**: fotos e ilustraciones a la medida, composiciones variadas y editable en su cuenta. Claude pone lo que Canva no sabe hacer solo: **el texto de cada lámina, su marca y el orden**; Canva pone el diseño.
+- **Si no lo tiene conectado**, ofrécelo una vez, con lo que gana y sin presionar: "Si conectas Canva (gratis, en claude.ai: **Configuración → Conectores → Canva**; en Claude Code, en la lista de conectores), te lo dejo diseñado ahí, con fotos e ilustraciones y editable. Sin eso funciona igual." Botones **Quiero conectarlo** · **Así está bien**. Con lo primero, los pasos con los nombres reales de los menús y espera a que diga que ya.
+- **Su marca en Canva:** si tiene un kit de marca (herramienta de listar kits de marca), pregunta «¿Uso tu kit de marca de Canva?». Si no, pasa sus colores hex, su letra y su @ en el brief.
+- **Cómo pedirlo:** usa la herramienta de crear diseño de Canva (`create-design`; si no existe, `generate-design` → `create-design-from-candidate`) con un brief que diga: «Carrusel de Instagram de N láminas (vertical)», el nombre y @ de la marca, sus colores hex, el estilo y la letra, y **el texto exacto de cada lámina, numerado** (el que aprobó en el Paso 3). Formato «Instagram Post (Portrait)» (TikTok: «Your Story»). Espera el trabajo con la herramienta de consultar el trabajo, respetando los segundos que pide.
+- **Revísalo y enséñalo como publicado:** exporta las láminas en PNG (`export-design`, ancho 1080), guárdalas como `01.png`, `02.png`… en `<trabajo>/canva/` (bajar los PNG de su propio diseño está bien) y corre `vista.py <trabajo>/canva --marca <trabajo>/marca/marca.json`. Compara con el guion (que esté todo el texto, en orden y sin faltas); si algo falta o cambió, corrígelo con las herramientas de editar de Canva o dilo. Entrega **la vista + el link para editar en Canva**.
+- **Fotos de Canva = generadas por IA:** dilo siempre en una línea ("las fotos de pan las creó la IA de Canva; si quieres las tuyas, súbelas a tu Canva y las pongo"). Para un negocio real, sus fotos van primero: si están en su Canva, pásalas como referencias; si solo están en la compu, dile que las suba a Canva (**Subidos → Subir archivos**) o usa la ruta de Claude para esas láminas. Nunca presentes fotos de IA como si fueran de su local o sus productos.
+- Si Canva falla o tarda demasiado, dilo claro y entrega la versión de Claude, que ya tienes.
+
 ## Conectores (opcionales, nunca obligatorios)
 
 Antes de ofrecer uno, revisa qué herramientas tienes de verdad en esta sesión y ofrece **solo las que existen**, con lo que gana la persona. Si no lo tiene, una línea de cómo conectarlo (en claude.ai: **Configuración → Conectores**), gratis, y sigues sin él.
-- **Canva:** con su conector, pasa **el texto exacto aprobado de cada lámina**, los colores hex, la letra y el tamaño (1080×1350 o 1080×1920) a la herramienta de generar o crear diseño, revisa la vista previa contra el guion y entrega el link de edición. Canva lo arma con sus propios diseños (no es pixel por pixel igual a los PNG): dilo. Si quiere exactamente los PNG: canva.com → **Subir** → arrastra las láminas.
+- **Canva:** ver «Ruta Canva» arriba. Si además quiere los PNG de Claude en su Canva: canva.com → **Subidos** → arrastra las láminas.
 - **Adobe Express:** igual, con sus herramientas (crear desde HTML o plantilla); entrega el link de edición. Si falla, dilo claro y entrega los PNG.
 - **Google Drive:** en Claude Code, si el Paso 0 encontró la carpeta de Drive, ofrece copiar ahí `Carrusel Pro/<tema>/` (láminas + descripción) para abrirlo en el celular y subirlo desde ahí. En la app, si el conector de Drive deja crear archivos, súbelos. Pide permiso antes de guardar.
 - **Instagram y TikTok:** la skill no publica por ti (eso pide entrar a tu cuenta). Las láminas quedan listas en orden: en el celular, **+ → Publicación → selecciona varias** (Instagram) o **+ → Fotos** (TikTok), y pegas la descripción.
@@ -170,7 +196,8 @@ Si pide varios: 5 temas con ángulos distintos (un error común, un paso a paso,
 | No quiere instalar Pillow | Explica que sin eso no se dibuja y qué hacer; no sigue a medias |
 | App de Claude (sin internet en el código) | Lee su página con la herramienta web, pide logos como archivo, o dibujos |
 | Sin internet | Todo con dibujos y sus fotos; el aviso de versión no dice nada |
-| No tiene Canva, Express ni Drive | Funciona igual; una línea de cómo conectarlos, sin insistir |
+| No tiene Canva, Express ni Drive | Funciona igual; ofrece una vez conectar Canva (lo que gana y cómo), sin insistir |
+| Tiene Canva | Le ofrece diseñarlo ahí (recomendado), lo enseña dentro del iPhone y le da el link para editar; avisa que las fotos de Canva son de IA |
 | Quiere publicar directo | Le explica en 2 pasos cómo subirlo desde el celular |
 
 ## Reglas de oro

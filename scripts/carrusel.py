@@ -175,6 +175,27 @@ class Lienzo:
     # ----- fondo de cada plantilla -----
     def decorar_fondo(self, invertido=False):
         nombre = self.g.get("plantilla", "editorial")
+        tipo = getattr(self, "tipo", "")
+        vida = self.g.get("vida", True) and not invertido and nombre != "bloque"
+        # «vida»: que no se vea plano ni genérico. Las láminas pares de contenido van sobre un tinte del color
+        # de la marca y cada lámina lleva una forma grande de su color, que cambia de esquina para dar ritmo.
+        if vida and self.n % 2 == 0 and tipo in ("punto", "lista", "pasos", "dato", "cita", "captura", "post"):
+            self.fondo = mezcla(self.acento, self.fondo, 0.86)
+            self.d.rectangle([0, 0, self.W, self.H], fill=self.fondo)
+            self.suave = mezcla(self.tinta, self.fondo, 0.42)
+        if vida and tipo not in ("foto", "cierre"):
+            capa = Image.new("RGBA", (self.W, self.H), (0, 0, 0, 0))
+            dc = ImageDraw.Draw(capa)
+            r = int(self.W * 0.30)
+            # solo en esquinas (nunca detrás del texto): arriba a la derecha o abajo a la derecha, alternando
+            arriba = self.n % 2 == 1
+            cx, cy = (self.W + r * 0.30, -r * 0.35) if arriba else (self.W + r * 0.35, self.H + r * 0.30)
+            dc.ellipse([cx - r, cy - r, cx + r, cy + r], fill=self.acento[:3] + (45 if arriba else 60,))
+            r2 = int(r * 0.17)
+            rx, ry = (self.W - r * 0.95, r * 0.12) if arriba else (self.W - r * 1.05, self.H - r * 0.30)
+            if tipo != "portada":          # en la portada ese lugar es del logo
+                dc.ellipse([rx - r2, ry - r2, rx + r2, ry + r2], outline=self.acento[:3] + (140,), width=7)
+            self.img.alpha_composite(capa)
         if invertido:
             self.d.rectangle([0, 0, self.W, self.H], fill=self.acento if nombre != "bloque" else self.acento)
         if nombre == "cuaderno":
@@ -281,6 +302,10 @@ class Lienzo:
         im = im.crop((l, t, l + w, t + h))
         mascara = Image.new("L", (w, h), 0)
         ImageDraw.Draw(mascara).rounded_rectangle([0, 0, w, h], radius=radio, fill=255)
+        if self.g.get("vida", True):          # sombra suave: la foto «flota», no se ve pegada
+            sombra = Image.new("RGBA", self.img.size, (0, 0, 0, 0))
+            ImageDraw.Draw(sombra).rounded_rectangle([x0 + 6, y0 + 16, x1 + 6, y1 + 16], radius=radio, fill=(0, 0, 0, 60))
+            self.img.alpha_composite(sombra.filter(ImageFilter.GaussianBlur(16)))
         self.img.paste(im, (x0, y0), mascara)
         return True
 
@@ -445,6 +470,22 @@ def s_cierre(c, s):
     c.img.paste(Image.new("RGBA", c.img.size, c.acento if plant != "bloque" else c.acento), (0, 0))
     c.d = ImageDraw.Draw(c.img)
     claro = c.fondo if plant != "bloque" else (17, 17, 17, 255)
+    if c.g.get("vida", True):
+        capa = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
+        dc = ImageDraw.Draw(capa)
+        r = int(c.W * 0.42)
+        dc.ellipse([c.W - r * 0.9, c.H - r * 0.85, c.W + r * 1.1, c.H + r * 1.15], fill=(255, 255, 255, 34))
+        dc.ellipse([-r * 0.5, -r * 0.6, r * 0.55, r * 0.45], outline=(255, 255, 255, 60), width=10)
+        c.img.alpha_composite(capa)
+        logo = c.g.get("marca", {}).get("logo")
+        if logo and os.path.exists(logo):          # su logo grande y transparente, abajo a la derecha
+            lg = Image.open(logo).convert("RGBA")
+            lg.thumbnail((380, 380), Image.LANCZOS)
+            # su silueta en blanco transparente (con sus colores se perdería sobre el color de su marca)
+            sil = Image.new("RGBA", lg.size, (255, 255, 255, 0))
+            sil.putalpha(lg.getchannel("A").point(lambda v: int(v * 0.20)))
+            c.img.alpha_composite(sil, (int(c.x1 - lg.width + 20), int(c.y1 - lg.height - 40)))
+        c.d = ImageDraw.Draw(c.img)
     if contraste(claro, c.acento) < 3 and contraste(c.tinta, c.acento) > contraste(claro, c.acento):
         claro = c.tinta                                         # acento claro (p. ej. verde lima): texto oscuro
     if s.get("dibujo"):
@@ -700,18 +741,18 @@ def render(guion, salida):
             if re.match(r"\d\d\.png$", viejo):
                 os.remove(os.path.join(carpeta, viejo))
         for i, s in enumerate(slides, 1):
-            c = Lienzo(g, i, len(slides))
+            c = Lienzo(g, i, len(slides)); c.tipo = s.get("tipo", "punto")
             TIPOS[s.get("tipo", "punto")](c, s)
             if fmt == "tiktok":
                 # TikTok es más alto: si la lámina deja mucho vacío abajo, se baja todo para que quede
                 # centrado en la pantalla (sin tocar la zona de los botones ni la de la descripción)
-                base = Lienzo(g, i, len(slides)); base.decorar_fondo()
+                base = Lienzo(g, i, len(slides)); base.tipo = c.tipo; base.decorar_fondo()
                 caja = ImageChops.difference(c.img.convert("RGB"), base.img.convert("RGB")).crop(
                     (0, 0, c.W, int(c.y1) - 4)).getbbox()
                 if caja:
                     libre = c.y1 - 30 - caja[3]
                     if libre > 120:
-                        c = Lienzo(g, i, len(slides))
+                        c = Lienzo(g, i, len(slides)); c.tipo = s.get("tipo", "punto")
                         c.y0 += libre * 0.5
                         TIPOS[s.get("tipo", "punto")](c, s)
             ruta = os.path.join(carpeta, f"{i:02d}.png")

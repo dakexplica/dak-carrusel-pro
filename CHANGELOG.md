@@ -8,7 +8,8 @@
 - **Así se ve publicado:** te enseña tu carrusel dentro de un iPhone, en Instagram y en TikTok, antes de subirlo.
 - **LinkedIn:** también te lo deja en PDF, que es como LinkedIn muestra los carruseles.
 - **Más rápida:** una sola ronda de preguntas y a trabajar.
-- Se conecta con Canva, Adobe Express y Google Drive si los tienes (nunca obligatorio).
+- **Canva (opcional):** si lo tienes conectado, te pregunta si lo diseña ahí (diseño profesional y editable en tu cuenta) y te lo enseña dentro del iPhone; si no, lo hace igual y te ofrece conectarlo. También Adobe Express y Google Drive.
+- **Más vida sin Canva:** fondos que alternan con el color de tu marca, formas de color, fotos con sombra y tu logo en la portada y el cierre.
 - Revisa sola lo que te falta y te pide permiso antes de instalar nada. Aviso silencioso de versiones nuevas.
 - Mini guía de 3 pasos (~5 min) al día con todo esto.
 

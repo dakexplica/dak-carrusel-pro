@@ -21,12 +21,13 @@
 - **La descripción** completa, lista para copiar (con una línea de por qué ayuda a su objetivo: "el gancho de arriba es lo que hace que lo abran").
 - **Cómo subirlo, en tu celular:** Instagram **+ → Publicación → selecciona varias** · TikTok **+ → Fotos** · LinkedIn **Empezar una publicación → + → Añadir un documento**.
 - "Y tu marca ya quedó guardada: la próxima vez no te pregunto tus colores."
-- **Cierra con UNA pregunta**, según lo que tenga (revísalo antes; solo lo que exista):
-  - Drive en la compu o su conector: "¿Te lo guardo en tu Google Drive para abrirlo directo en el celular? 1 · Sí · 2 · No, así está bien"
-  - Si no, conector de Canva o Adobe Express: "¿Te lo dejo también en Canva para editarlo ahí? 1 · Sí · 2 · No"
-  - Si no tiene nada: "Escríbeme «listo» para terminar." (y en una línea: "si algún día quieres Canva o Drive, se conectan gratis en Configuración → Conectores")
+- **Cierra con UNA pregunta: Canva** (revisa antes si tiene sus herramientas en esta sesión). Es lo que más sube el nivel:
+  - **Con Canva conectado:** "Lo último, y lo que más se nota: ¿te lo hago también en **Canva**? Queda con fotos e ilustraciones de diseño profesional, y editable en tu cuenta. 1 · Sí, en Canva · 2 · No, así está bien"
+  - **Sin Canva:** "Lo último, y lo que más se nota: si conectas **Canva** (gratis), te lo dejo diseñado ahí, con fotos e ilustraciones y editable. Se conecta en **Configuración → Conectores → Canva**. 1 · Ya lo conecté, hazlo · 2 · Así está bien"
 
-**ALTO.** Con «Sí», sigue "Conectores" del SKILL.md (pide nada más: ya dijo que sí) y di en una línea qué hiciste y dónde quedó.
+**ALTO.**
+- **Sí / ya lo conecté:** avisa "Lo armo en tu Canva; tarda como un minuto" y sigue la «Ruta Canva» del SKILL.md con su marca y sus textos. Luego junta las dos vistas: `comparar.py <trabajo>/todas/instagram/vista-instagram.png <trabajo>/canva/vista-instagram.png --salida <trabajo>/claude-vs-canva.jpg --etiquetas "Con Claude" "Con Canva"`. **MENSAJE (cierra el turno):** la imagen, el link para editar en Canva, una línea honesta ("las fotos de Canva las crea su IA; si quieres las tuyas, súbelas a tu Canva y las cambio") y "Escríbeme «listo» para terminar." **ALTO.**
+- **No / así está bien:** si tiene Drive (en la compu o conector), una sola oferta más: "¿Te lo guardo en tu Google Drive para abrirlo en el celular? 1 · Sí · 2 · No". Si no, sigue a la despedida.
 
 ## Mensaje 2 · Despedida (corta, no es un manual)
 

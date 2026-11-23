@@ -8,7 +8,8 @@ Le dices a Claude **"hazme un carrusel sobre…"** y te entrega un carrusel **co
 - **Tu página dentro de un iPhone**, paso a paso, comparaciones, listas, datos con fuente y 4 estilos (Editorial, Minimal, Bloque y Cuaderno).
 - **Así se ve publicado:** tu carrusel dentro de un iPhone, en Instagram y en TikTok, antes de subirlo.
 - **Instagram (4:5), TikTok (modo foto) y LinkedIn (PDF)** a la vez, cada uno acomodado a su medida.
-- Una sola ronda de preguntas y a trabajar. Si tienes **Canva, Adobe Express o Google Drive** conectados, te lo deja ahí también.
+- **Con Canva, si lo tienes (opcional):** te pregunta si lo diseña en tu Canva, con diseño profesional y editable. Si no lo tienes, lo hace igual aquí mismo.
+- **Se adapta a lo que tengas:** con tus fotos, con Canva o desde cero (fotos reales o dibujos a la medida). Una sola ronda de preguntas y a trabajar.
 
 Incluye una **mini guía interactiva** de unos 5 minutos (3 pasos): tu primer carrusel, con tu marca, y listo para subir.
 
