@@ -2,6 +2,7 @@
 
 ## 2.0.0
 - **Se adapta a tu marca:** le das el link de tu página (o una captura de tu perfil de Instagram) y saca tu logo, tus colores, **tu letra** y hasta fotos tuyas. Si tu letra es de pago, usa la gratis más parecida y te lo dice; o te enseña 3 para elegir. Sin marca, sale un diseño neutro y limpio.
+- **Con lo tuyo, como quieras dárselo:** una carpeta, imágenes arrastradas al chat, un documento o texto pegado. Junta tu logo, tus fotos, tu letra y tus notas aunque estén revueltos, escribe las láminas con tus ideas y pone tus fotos donde mejor quedan (nuevo: lámina de foto a pantalla completa y fotos en cualquier lámina).
 - **Imágenes reales:** fotos libres de uso del tema (con su crédito) y los logos reales de las apps que mencionas (Instagram, Canva, WhatsApp…).
 - **Láminas nuevas:** tu página dentro de un iPhone, paso a paso, comparación (antes/ahora), fila de logos y publicación tipo X.
 - **Así se ve publicado:** te enseña tu carrusel dentro de un iPhone, en Instagram y en TikTok, antes de subirlo.

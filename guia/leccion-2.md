@@ -17,19 +17,19 @@
 1. **De mi página web** — me pasas el link y saco tu logo, tus colores, tu letra y hasta fotos tuyas
 2. **De mi Instagram** — me mandas una captura de tu perfil y saco tus colores (Instagram no deja leer perfiles desde fuera)
 3. **Invéntame una** — te propongo 3 marcas y eliges viéndolas
-4. **Te paso mis colores y mi logo** — o una foto de donde salen
+4. **Te paso mis cosas** — tu logo, tus fotos, tus colores o hasta tus notas; en una carpeta, arrastradas al chat o como quieras, aunque estén revueltas
 
 "Responde 1, 2, 3 o 4 (y si es la 1, pega tu link de una vez)." **ALTO.**
 
 ## 2 · Su marca, en su carrusel
 
-Si eligió 2 o 4 y no mandó lo que hace falta, pídelo una sola vez (la captura se arrastra al chat; rutas de ejemplo genéricas `/Users/tu-nombre/Desktop/perfil.png`). **ALTO.**
+Si eligió 2 o 4 y no mandó lo que hace falta, pídelo una sola vez: "arrástralo aquí al chat o dime en qué carpeta está" (rutas de ejemplo genéricas `/Users/tu-nombre/Desktop/mi-marca`). **ALTO.**
 
 **Aviso (una línea):** "Saco tu marca y vuelvo a dibujar tu carrusel con ella. Menos de un minuto."
 
 **ACCIÓN, en silencio** (`<guion>` = el guion del paso 1; con el ejemplo, `<skill>/ejemplos/cafeteria.json`; agrega siempre `--formato` y `--cta` del paso 1):
 - **1 o 2:** Paso 2 del SKILL.md (`marca.py web` o `marca.py capturas`) → `<trabajo>/marca/marca.json`. Si sacó fotos de su página, ponle la primera a la portada.
-- **4:** arma tú `<trabajo>/marca/marca.json` con sus colores, logo y letra (si da el nombre de una letra: `fuentes.py bajar`).
+- **4:** sigue «Si trae su propio contenido» del SKILL.md (`marca.py archivos <lo que te dio> --carpeta <trabajo>/marca`). Pon sus fotos en las láminas (portada, una lámina `foto`, `"foto"` en los puntos) y, si mandó notas, rehaz el texto con sus ideas. Si solo dio colores sueltos o el nombre de una letra, arma tú `marca.json` (`fuentes.py bajar` para la letra).
 - **3 · Invéntame una:** 3 identidades distintas, **cada una con nombre y @ inventados** que le queden a su tema (p. ej. «Café Brasa · @cafebrasa»), su paleta y una letra de `fuentes.py ideas`. Escribe 3 `marca.json` (`<trabajo>/marca-1/`, `-2/`, `-3/`), dibuja solo la portada de cada una (`carrusel.py <guion> <trabajo>/opcion-1 --marca <trabajo>/marca-1/marca.json --solo-portada`) y júntalas: `comparar.py <…>/opcion-1/01.png <…>/opcion-2/01.png <…>/opcion-3/01.png --salida <trabajo>/3-marcas.jpg --etiquetas "<nombre 1>" "<nombre 2>" "<nombre 3>"`.
 - **El antes y después** (1, 2 y 4): `carrusel.py <guion> <trabajo>/antes --sin-marca --solo-portada`, todo el carrusel con su marca (`carrusel.py <guion> <trabajo>/listo --marca <trabajo>/marca/marca.json`), y `comparar.py <trabajo>/antes/01.png <trabajo>/listo/01.png --salida <trabajo>/antes-despues.jpg --etiquetas "Sin marca" "Con tu marca"`. Saca la vista nueva (`vista.py <trabajo>/listo --guion <guion> --marca <trabajo>/marca/marca.json`). **Mira todo** antes de enseñarlo.
 

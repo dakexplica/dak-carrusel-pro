@@ -2,6 +2,12 @@
 """carrusel-pro · saca la marca de una página web o de capturas (por ejemplo, de tu perfil de Instagram).
 
   python3 marca.py web <link> [carpeta]           → lee la página: nombre, colores, logo, tipo de letra y fotos
+  python3 marca.py carpeta <su carpeta> [carpeta]  → su carpeta de marca: logo, fotos, letras (.ttf/.otf) y colores
+                                                  (de un .txt con #códigos o del logo). Solo la lee; nada se mueve.
+                                                  Deja también tus-fotos.jpg (sus fotos con número, para elegir).
+  python3 marca.py archivos <archivo o carpeta> [<más>…] --carpeta C
+                                                  → lo mismo con lo que te haya dado como sea: imágenes arrastradas al chat,
+                                                    archivos subidos a la app, varias carpetas o todo mezclado.
   python3 marca.py capturas <img> [<img>…] [--carpeta C]
                                                   → saca los colores de capturas (perfil de Instagram, tu feed, tu logo…)
 
@@ -332,6 +338,149 @@ def capturas(rutas, carpeta):
             "estilo_sugerido": estilo_para("", colores), "paleta": paleta, "fotos": []}
 
 
+IMG_EXT = (".png", ".jpg", ".jpeg", ".webp")
+LETRA_EXT = (".ttf", ".otf")
+
+
+def juntar(rutas):
+    """Lo que la persona dio, como lo haya dado: carpetas (se recorren), archivos sueltos (arrastrados al chat,
+    subidos a la app) o una mezcla. Devuelve la lista de archivos y la carpeta que da el nombre."""
+    archivos, base = [], ""
+    for r in rutas:
+        r = os.path.abspath(os.path.expanduser(r))
+        if os.path.isdir(r):
+            base = base or r
+            for raiz, dirs, nombres in os.walk(r):
+                dirs[:] = [d for d in dirs if not d.startswith(".")]
+                if raiz[len(r):].count(os.sep) > 2:
+                    continue
+                archivos += [os.path.join(raiz, n) for n in nombres if not n.startswith(".")]
+                if len(archivos) > 400:
+                    break
+        elif os.path.isfile(r):
+            archivos.append(r)
+        else:
+            print(f"AVISO no encuentro «{r}» (¿se movió o tiene otro nombre?)")
+    if not archivos:
+        print("NO_ABRE: no encontré ningún archivo en lo que me diste."); sys.exit(3)
+    return archivos, base
+
+
+def carpeta_marca(rutas, salida):
+    """Su material: logo, fotos, letras, notas y (si hay) un .txt con sus colores. Solo se LEE: nada se mueve ni se borra."""
+    archivos, ruta = juntar(rutas if isinstance(rutas, list) else [rutas])
+    bajo = lambda p: os.path.basename(p).lower()
+    imgs = [p for p in archivos if bajo(p).endswith(IMG_EXT)]
+    letras = [p for p in archivos if bajo(p).endswith(LETRA_EXT)]
+    raras = [p for p in archivos if bajo(p).endswith((".heic", ".svg", ".ai", ".psd", ".eps"))]
+    # su contenido: notas, textos, documentos (lo que quiere decir, aunque esté revuelto)
+    textos = [p for p in archivos if bajo(p).endswith((".txt", ".md", ".docx", ".doc", ".pdf", ".pages", ".rtf"))
+              and not re.search(r"^colou?res", bajo(p))]
+
+    # logo: el que se llama logo/isotipo/marca; si no, un PNG con transparencia y casi cuadrado
+    def es_logo_por_nombre(p):
+        return re.search(r"logo|isotipo|logotipo|imagotipo|marca|brand|icono|icon", bajo(p)) is not None
+    logo_ruta, cand = "", sorted([p for p in imgs if es_logo_por_nombre(p)], key=lambda p: (not bajo(p).endswith(".png"), len(bajo(p))))
+    if not cand:
+        for p in imgs:
+            try:
+                im = Image.open(p)
+                if im.mode in ("RGBA", "LA", "P") and max(im.size) <= 2000 and 0.4 < im.width / im.height < 2.5 and \
+                        im.convert("RGBA").getchannel("A").getextrema()[0] < 50:
+                    cand.append(p)
+            except Exception:
+                pass
+    if cand:
+        logo_ruta = cand[0]
+
+    candidatos = []
+    # colores escritos por la persona (un .txt/.md con #códigos): mandan
+    for p in archivos:
+        if bajo(p).endswith((".txt", ".md")) and os.path.getsize(p) < 200_000:
+            for h in re.findall(r"#([0-9a-fA-F]{6})\b", open(p, encoding="utf-8", errors="ignore").read()):
+                candidatos.append((rgb(h), 400))
+    if logo_ruta:
+        try:
+            for c, k in paleta_de_imagen(Image.open(logo_ruta), 6):
+                candidatos.append((c, min(k // 20, 90)))
+        except Exception:
+            logo_ruta = ""
+
+    # fotos: las suyas, grandes, que no sean el logo (se usan donde están, sin copiarlas)
+    fotos = []
+    for p in imgs:
+        if p == logo_ruta or es_logo_por_nombre(p):
+            continue
+        try:
+            im = Image.open(p)
+            if min(im.size) >= 500:
+                fotos.append((im.width * im.height, p))
+        except Exception:
+            pass
+    fotos = [p for _, p in sorted(fotos, reverse=True)][:30]
+    for p in fotos[:4]:
+        try:
+            for c, k in paleta_de_imagen(Image.open(p), 6):
+                candidatos.append((c, min(k // 80, 10)))
+        except Exception:
+            pass
+    if not candidatos:
+        candidatos = [((250, 250, 248), 10), ((17, 17, 17), 10)]
+    colores, paleta = elegir_colores(candidatos)
+
+    # sus letras
+    fuentes_m, familia = {}, ""
+    if letras:
+        def peso(p):
+            n = bajo(p)
+            return 3 if re.search(r"black|heavy|extrabold|ultra", n) else 2 if "bold" in n or "semibold" in n else \
+                1 if re.search(r"medium", n) else 0
+        normales = [p for p in letras if not re.search(r"italic|oblique|cursiva", bajo(p))]
+        italicas = [p for p in letras if re.search(r"italic|oblique|cursiva", bajo(p))]
+        reg = min(normales or letras, key=peso)
+        neg = max(normales or letras, key=peso)
+        try:
+            from PIL import ImageFont as _IF
+            familia = _IF.truetype(reg, 20).getname()[0]
+        except Exception:
+            familia = os.path.splitext(os.path.basename(reg))[0]
+        fuentes_m = {"titulo": neg, "titulo_it": italicas[0] if italicas else neg, "texto": reg, "fuerte": neg}
+
+    # hoja de sus fotos con número, para decir «usa la 3 en la portada»
+    if fotos:
+        os.makedirs(salida, exist_ok=True)
+        lado, cols = 300, 5
+        filas = (min(len(fotos), 15) + cols - 1) // cols
+        hoja = Image.new("RGB", (cols * (lado + 16) + 16, filas * (lado + 16) + 16), (244, 245, 247))
+        dh = ImageDraw.Draw(hoja)
+        try:
+            fn = ImageFont.truetype(os.path.join(FUENTES, "InstrumentSans-Bold.ttf"), 34)
+        except Exception:
+            fn = ImageFont.load_default()
+        for i, p in enumerate(fotos[:15]):
+            im = Image.open(p).convert("RGB")
+            ld = min(im.size)
+            im = im.crop(((im.width - ld) // 2, (im.height - ld) // 2, (im.width + ld) // 2, (im.height + ld) // 2)).resize((lado, lado))
+            x, y = 16 + (i % cols) * (lado + 16), 16 + (i // cols) * (lado + 16)
+            hoja.paste(im, (x, y))
+            dh.ellipse([x + 10, y + 10, x + 62, y + 62], fill=(17, 17, 17))
+            t = str(i + 1)
+            dh.text((x + 36 - fn.getlength(t) / 2, y + 16), t, font=fn, fill=(255, 255, 255))
+        hoja.save(os.path.join(salida, "tus-fotos.jpg"), quality=85)
+
+    nombre = re.sub(r"[-_]+", " ", os.path.basename(ruta)).strip() if ruta else ""
+    if re.search(r"^(marca|logo|logos|imagenes|imágenes|fotos|brand|assets|recursos|mi marca)$", nombre, re.I):
+        nombre = ""
+    if raras:
+        print("AVISO estos archivos no los puedo usar directo (pídele un PNG o JPG): " +
+              ", ".join(os.path.basename(p) for p in raras[:6]))
+    if not logo_ruta:
+        print("AVISO no vi un logo (llámalo «logo.png», mejor sin fondo)")
+    return {"nombre": nombre, "usuario": "", "web": "", "colores": colores, "logo": logo_ruta, "letra_web": familia,
+            "fuentes": fuentes_m, "estilo_sugerido": estilo_para(familia, colores), "paleta": paleta, "fotos": fotos,
+            "carpeta_marca": ruta, "textos": textos}
+
+
 def vista(m, carpeta):
     """marca.jpg: para enseñarla y que la persona diga «sí, es mi marca»."""
     W, H = 1200, 520
@@ -365,9 +514,17 @@ def vista(m, carpeta):
 
 
 def main():
-    if len(sys.argv) < 3 or sys.argv[1] not in ("web", "capturas"):
+    if len(sys.argv) < 3 or sys.argv[1] not in ("web", "capturas", "carpeta", "archivos"):
         print(__doc__); sys.exit(1)
-    if sys.argv[1] == "web":
+    if sys.argv[1] in ("carpeta", "archivos"):
+        args = sys.argv[2:]
+        carpeta = "marca"
+        if "--carpeta" in args:
+            i = args.index("--carpeta"); carpeta = args[i + 1]; del args[i:i + 2]
+        elif sys.argv[1] == "carpeta" and len(args) == 2:
+            carpeta = args.pop()                      # forma corta: carpeta <su carpeta> <salida>
+        m = carpeta_marca(args, carpeta)
+    elif sys.argv[1] == "web":
         carpeta = sys.argv[3] if len(sys.argv) > 3 else "marca"
         m = web(sys.argv[2], carpeta)
     else:
@@ -388,8 +545,10 @@ def main():
     print("LETRA", (f"«{m['letra_web']}» es propia de su marca; uso la gratis más parecida: {m['letra_parecida']} (díselo)"
                     if m.get("letra_parecida") else "lista") + ": " + json.dumps(m["fuentes"], ensure_ascii=False) if m.get("fuentes") else
           (f"«{m['letra_web']}» no se puede bajar (no es de Google Fonts): pide su archivo o elige una parecida"
-           if m.get("letra_web") else "no encontré la letra de su página: usa la del estilo o pregúntale"))
-    print("FOTOS", len(m["fotos"]))
+           if m.get("letra_web") else "no encontré su letra: usa la del estilo o pregúntale cuál quiere"))
+    if m.get("textos"):
+        print("TEXTOS", len(m["textos"]), "· su contenido para las láminas (léelos):", " | ".join(m["textos"][:10]))
+    print("FOTOS", str(len(m["fotos"])) + (f" (sus fotos con número: {os.path.join(carpeta, 'tus-fotos.jpg')})" if "carpeta_marca" in m and m["fotos"] else ""))
     print("VISTA", vista(m, carpeta))
     try:
         import version; version.avisar()

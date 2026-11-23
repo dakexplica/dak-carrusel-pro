@@ -3,6 +3,7 @@
 Le dices a Claude **"hazme un carrusel sobre…"** y te entrega un carrusel **con tu marca**, listo para Instagram, TikTok y LinkedIn: el texto de cada lámina, fotos y logos reales, la descripción con hashtags y una vista de cómo se ve ya publicado.
 
 - **Se adapta a tu marca:** le pasas el link de tu página (o una captura de tu perfil de Instagram) y saca tu logo, tus colores, **tu letra** y hasta fotos tuyas; o le dices qué letra quieres y te enseña 3 para elegir. Sin marca, sale un diseño neutro y limpio.
+- **Con lo tuyo, aunque esté revuelto:** pásale tus fotos, tu logo, tu letra o tus notas como quieras (una carpeta, arrastradas al chat, un documento o texto pegado) y lo ordena: escribe cada lámina con tus ideas y acomoda cada foto donde mejor queda.
 - **Imágenes reales:** fotos libres de uso del tema (con su crédito) y los logos reales de las apps que mencionas.
 - **Tu página dentro de un iPhone**, paso a paso, comparaciones, listas, datos con fuente y 4 estilos (Editorial, Minimal, Bloque y Cuaderno).
 - **Así se ve publicado:** tu carrusel dentro de un iPhone, en Instagram y en TikTok, antes de subirlo.

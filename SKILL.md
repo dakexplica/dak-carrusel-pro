@@ -2,12 +2,13 @@
 name: dak-carrusel-pro
 description: >-
   Diseña carruseles completos para Instagram, TikTok (modo foto) y LinkedIn (PDF) de cualquier tema, con TU marca
-  sacada de tu página web o de una captura de tu Instagram, fotos libres y logos reales de las apps que se mencionan,
+  sacada de tu página web o de una captura de tu Instagram, o con TUS cosas (fotos, logo, letra, notas revueltas: en una
+  carpeta, arrastradas al chat o como quieras) que ordena y acomoda; fotos libres y logos reales de las apps que se mencionan,
   capturas de tu página dentro de un iPhone, ilustraciones dibujadas a la medida, descripción y hashtags, y una vista
-  de cómo se ve ya publicado. Una sola ronda de preguntas y a trabajar. Se conecta con Canva, Adobe Express y Google
+  de cómo se ve ya publicado. Se conecta con Canva, Adobe Express y Google
   Drive si los tienes. Incluye una mini guía interactiva de ~5 min. Úsala cuando alguien diga "hazme un carrusel",
-  "carrusel de Instagram sobre…", "post de varias imágenes", "slides para Instagram o LinkedIn", "convierte este
-  artículo/PDF/video en carrusel", "carrusel con mi marca", "plan de carruseles para la semana", "fotos para TikTok
+  "carrusel de Instagram sobre…", "post de varias imágenes", "slides para LinkedIn", "convierte este
+  artículo/PDF/video en carrusel", "carrusel con mi marca", "con mis fotos", "aquí están mis fotos y mi logo", "plan de carruseles para la semana", "fotos para TikTok
   de…" o "empieza la guía de carrusel", aunque no nombren la skill.
 ---
 
@@ -19,6 +20,7 @@ Trabajas como diseñador y redactor de redes. **Una sola ronda de preguntas, pro
 |---|---|
 | `scripts/carrusel.py guion.json salida/` | El motor: guion JSON → PNG por lámina + `_revision.jpg` (+ `carrusel.pdf` en LinkedIn) |
 | `scripts/marca.py web <link> <carpeta>` · `marca.py capturas <img…> --carpeta <c>` | Saca nombre, colores, logo, letra y fotos de su página, o los colores de capturas de su Instagram |
+| `scripts/marca.py archivos <archivos o carpetas…> --carpeta <c>` | **Lo suyo, como lo dé** (carpeta, imágenes arrastradas al chat, archivos subidos, mezclado): saca logo, colores, letras y fotos, lista sus notas y documentos, y deja `tus-fotos.jpg` con sus fotos numeradas |
 | `scripts/imagenes.py fotos "<qué>" <n> <carpeta>` · `imagenes.py logo "<app>" <carpeta>` | Fotos libres de uso (con créditos) y logos reales |
 | `scripts/fuentes.py bajar "<letra>" <carpeta>` · `fuentes.py muestra "<A>" "<B>" "<C>"` · `fuentes.py ideas` | Su letra (o la que pida) desde Google Fonts, 3 letras para elegir viéndolas, ideas por personalidad |
 | `scripts/captura.py <link> <salida.png>` | Su página como se ve en un celular, para la lámina `captura` |
@@ -55,8 +57,8 @@ En la app de Claude (con "Crear y editar archivos" encendido) Pillow ya viene. A
 
 Si no dio el tema, pregúntalo primero en una frase ("¿De qué es tu carrusel? Puede ser un tema, un texto, un link o un PDF"). Luego **una sola ventana de botones** (`AskUserQuestion`, hasta 4 preguntas; tu recomendación primero; sin la herramienta, lista numerada). **No preguntes lo que ya dijo** y si dice "hazlo tú todo", usa lo recomendado y avísalo en una línea.
 1. **¿Dónde lo publicas?** Instagram (recomendado) · TikTok modo foto · LinkedIn (PDF) · Todo lo anterior
-2. **¿Tu marca?** De mi página o mi Instagram (recomendado: "me pasas el link o una captura; no necesito tu contraseña ni entrar a tu cuenta") · Te paso mis colores y logo · Invéntamela · Sin marca. *Si hay marca guardada (`~/.carrusel-pro/marca.json`), esta pregunta es «¿Uso tu marca guardada, [nombre]?»*
-3. **¿Qué imágenes?** Fotos reales + dibujos (recomendado) · Solo dibujos · Mis fotos · Solo texto
+2. **¿Tu marca?** De mi página o mi Instagram (recomendado: "me pasas el link o una captura; no necesito tu contraseña ni entrar a tu cuenta") · Te paso mis cosas ("tu logo, tus fotos, tus colores o tus notas: en una carpeta, arrastradas al chat o como quieras") · Invéntamela · Sin marca. *Si hay marca guardada (`~/.carrusel-pro/marca.json`), esta pregunta es «¿Uso tu marca guardada, [nombre]?»*
+3. **¿Qué imágenes?** Fotos reales + dibujos (recomendado) · Solo dibujos · Mis fotos · Solo texto  *(si ya mandó sus fotos, no lo preguntes: van las suyas)*
 4. **¿Estilo?** Decide tú (recomendado) · Editorial · Minimal · Bloque · Cuaderno (enseña `estilos.jpg` si duda)
 
 El objetivo (vender, enseñar, marca personal) y el tono los deduces del tema y de su página; no los preguntes.
@@ -75,6 +77,14 @@ El objetivo (vender, enseñar, marca personal) y el tono los deduces del tema y 
 - El acento de su marca se usa **exacto**; el motor oscurece solo las palabras resaltadas si se leen poco, y si el acento es muy claro, el cierre lleva texto oscuro.
 - En el guion: `"marca": {"nombre", "usuario", "colores", "logo", "fuentes"}` copiados de `marca.json`.
 
+## Si trae su propio contenido (fotos, logo, notas…), como él quiera
+
+La persona decide cómo te lo da, y la skill lo resuelve siempre: **una carpeta**, **imágenes o archivos arrastrados al chat**, **texto pegado**, **un documento** (PDF, Word, notas), **el link de su página**, o todo mezclado. Puede estar revuelto: tu trabajo es ordenarlo.
+1. **Junta todo:** `python3 <skill>/scripts/marca.py archivos <cada archivo o carpeta que te dio> --carpeta <trabajo>/marca`. En la app de Claude, lo que sube está en `/mnt/user-data/uploads/`. En Claude Code, si pegó una imagen sin archivo, pídele que la **arrastre** al chat (así llega con su ruta) o que te diga en qué carpeta está. Si además dio su página, corre también `marca.py web` y quédate con lo mejor de cada uno (lo suyo manda).
+2. **Lee su contenido** (la línea `TEXTOS` y lo que pegó en el chat; un PDF con tu herramienta de leer; un Word en Mac con `textutil -convert txt <archivo> -output <trabajo>/texto.txt`). **El carrusel sale de SUS ideas:** ordénalas, escoge el gancho, quita lo repetido y escribe cada lámina con sus datos (promos, horarios, precios tal cual los dio). No inventes nada que no esté ahí; si falta algo importante, pregúntalo en una línea.
+3. **Acomoda sus fotos:** mira `tus-fotos.jpg` (numeradas) y pon cada foto donde mejor cuente la idea: la más llamativa en la portada, una lámina `foto` a pantalla completa para la que más impacta, y `"foto"` en las láminas `punto`. **Sus fotos van primero**; fotos libres o dibujos solo para huecos, y dilo ("la lámina 3 no tenía foto tuya: le puse un dibujo").
+4. Su logo, sus colores y su letra salen de lo mismo (Paso 2). Nunca muevas, renombres ni borres sus archivos: se usan donde están.
+
 ## Paso 3 · El texto de cada lámina (enséñalo antes de diseñar)
 
 - **Portada = gancho:** un número, un resultado, una contradicción o una pregunta que duela. Máximo 10 palabras; el subtítulo da una razón para deslizar.
@@ -88,7 +98,8 @@ El objetivo (vender, enseñar, marca personal) y el tono los deduces del tema y 
 | Tipo | Campos | Cuándo |
 |---|---|---|
 | `portada` | etiqueta, titulo, subtitulo, y `foto` **o** `dibujo` (o ninguno: solo texto) | Siempre la primera |
-| `punto` | num, titulo, texto, dibujo | Un consejo o idea |
+| `punto` | num, titulo, texto, y `dibujo` **o** `foto` | Un consejo o idea (con su foto arriba) |
+| `foto` | foto, titulo, texto | Su mejor foto a toda la lámina, con el título encima |
 | `lista` | titulo, items, dibujo | 3 a 5 cosas cortas |
 | `pasos` | titulo, items ("Paso: detalle") | Un cómo se hace |
 | `comparacion` | titulo, col_a, col_b, filas [[a, b]…] | Antes/después, sin/con, mito/realidad |
@@ -153,6 +164,8 @@ Si pide varios: 5 temas con ángulos distintos (un error común, un paso a paso,
 | Su página no abre para robots | Lo dice y pide una captura o sus colores |
 | No tiene fotos | Fotos libres reales del tema + dibujos; nunca fotos inventadas de "su local" |
 | Nombra apps | Logos reales automáticos |
+| Trae sus fotos, logo y notas revueltos | Lo junta (carpeta, chat o subido), escribe las láminas con SUS ideas y acomoda cada foto; nada se inventa ni se mueve |
+| Pegó una imagen en Claude Code sin archivo | Le pide arrastrarla al chat o decir en qué carpeta está |
 | Da la página de otra empresa | Pregunta si es suya; si no, la usa de inspiración sin poner el logo ni el @ de esa empresa |
 | No quiere instalar Pillow | Explica que sin eso no se dibuja y qué hacer; no sigue a medias |
 | App de Claude (sin internet en el código) | Lee su página con la herramienta web, pide logos como archivo, o dibujos |

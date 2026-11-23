@@ -249,8 +249,12 @@ class Lienzo:
         if logo and os.path.exists(logo):
             lg = Image.open(logo).convert("RGBA")
             lg.thumbnail((140, 52))
-            self.img.alpha_composite(lg, (int(x), int(yb - lg.height / 2 + 14)))
-            x += lg.width + 18
+            px, py = int(x), int(yb - lg.height / 2 + 14)
+            if color is not None:          # sobre el color de la marca o una foto: el logo va en una placa clara
+                self.d.rounded_rectangle([px - 8, py - 8, px + lg.width + 8, py + lg.height + 8], radius=14,
+                                         fill=self.fondo if self.g.get("plantilla") != "bloque" else (255, 255, 255, 255))
+            self.img.alpha_composite(lg, (px, py))
+            x += lg.width + 22
         if usuario:
             self.d.text((x, yb), usuario, font=f, fill=color)
         if desliza:
@@ -322,6 +326,23 @@ def s_portada(c, s):
 def s_punto(c, s):
     c.decorar_fondo()
     y = c.y0
+    if s.get("foto"):
+        # con su foto: la foto arriba (40 % de la lámina) y la idea abajo; el número va sobre la foto
+        alto_f = (c.y1 - c.y0) * 0.42
+        c.foto(s["foto"], (c.x0, y, c.x1, y + alto_f))
+        if s.get("num") is not None:
+            f = fuente(c.p["fuerte"], 54)
+            t = f"{s['num']:02d}" if isinstance(s["num"], int) else str(s["num"])
+            w = f.getlength(t)
+            c.d.rounded_rectangle([c.x0 + 24, y + 24, c.x0 + 24 + w + 44, y + 24 + 84], radius=42, fill=c.acento)
+            c.d.text((c.x0 + 46, y + 36), t, font=f, fill=c.fondo if contraste(c.fondo, c.acento) >= 2 else c.tinta)
+        fin = c.texto(s["titulo"], (c.x0, y + alto_f + 50, c.x1, y + alto_f + 300), c.p["titulo"], 92 * c.p["escala_titulo"],
+                      interlineado=1.05)
+        c.d.line([c.x0, fin + 28, c.x0 + 120, fin + 28], fill=c.acento, width=6)
+        if s.get("texto"):
+            c.texto(s["texto"], (c.x0, fin + 66, c.x1, c.y1 - 20), c.p["texto"], 50, c.suave, enfasis="color", interlineado=1.32)
+        c.pie()
+        return
     num = s.get("num")
     if num is not None:
         f = fuente(c.p["titulo_it"] if c.g.get("plantilla") == "editorial" else c.p["titulo"], 230)
@@ -459,6 +480,37 @@ def _titulo_arriba(c, s, alto=300, tam=96):
     return fin
 
 
+def s_foto(c, s):
+    """Su foto a toda la lámina, con el título encima (sobre una sombra para que se lea)."""
+    im = Image.open(s["foto"]).convert("RGB")
+    esc = max(c.W / im.width, c.H / im.height)
+    im = im.resize((math.ceil(im.width * esc), math.ceil(im.height * esc)), Image.LANCZOS)
+    l, t = (im.width - c.W) // 2, (im.height - c.H) // 2
+    c.img.paste(im.crop((l, t, l + c.W, t + c.H)), (0, 0))
+    sombra = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
+    sd = ImageDraw.Draw(sombra)
+    zona = int(c.H * 0.62)
+    for i in range(zona):
+        sd.line([0, c.H - i, c.W, c.H - i], fill=(0, 0, 0, int(225 * (1 - i / zona) ** 1.1)))
+    c.img.alpha_composite(sombra)
+    c.d = ImageDraw.Draw(c.img)
+    blanco = (255, 255, 255, 255)
+    acento_viejo = c.acento_txt
+    if contraste(c.acento, (20, 20, 20)) >= 3:
+        c.acento_txt = c.acento
+    else:
+        c.acento_txt = blanco
+    alto_tx = 150 if s.get("texto") else 0
+    fin = c.texto(s.get("titulo", ""), (c.x0, c.y1 - 330 - alto_tx, c.x1, c.y1 - 30 - alto_tx), c.p["titulo"],
+                  100 * c.p["escala_titulo"], blanco, interlineado=1.08, vertical="abajo",
+                  enfasis="subrayado")                 # sobre una foto, lo resaltado va subrayado en blanco: siempre se lee
+    if s.get("texto"):
+        c.texto(s["texto"], (c.x0, fin + 24, c.x1, c.y1 - 30), c.p["texto"], 48, (235, 235, 235, 255), enfasis="color",
+                interlineado=1.3)
+    c.acento_txt = acento_viejo
+    c.pie(color=(235, 235, 235, 255))
+
+
 def s_captura(c, s):
     """Una captura real (de una app, una web, un chat) dentro de un iPhone. Lo que más credibilidad da."""
     c.decorar_fondo()
@@ -589,7 +641,7 @@ def s_logos(c, s):
 
 TIPOS = dict(portada=s_portada, punto=s_punto, lista=s_lista, dato=s_dato, cita=s_cita,
              antes_despues=s_antes_despues, cierre=s_cierre, captura=s_captura, post=s_post, pasos=s_pasos,
-             comparacion=s_comparacion, logos=s_logos)
+             comparacion=s_comparacion, logos=s_logos, foto=s_foto)
 
 
 def _sin_acento(t):
@@ -613,6 +665,8 @@ def revisar(guion):
         for it in s.get("logos", []):
             if not it.get("img") or not os.path.exists(it["img"]):
                 problemas.append(("FALTA_IMAGEN", f"lámina {i}: no existe el logo de «{it.get('nombre', '?')}» («{it.get('img')}»)"))
+        if t == "foto" and not s.get("foto"):
+            problemas.append(("FALTA_IMAGEN", f"lámina {i}: la lámina foto necesita \"foto\": <imagen>"))
         if t == "captura" and not s.get("captura"):
             problemas.append(("FALTA_IMAGEN", f"lámina {i}: la lámina captura necesita \"captura\": <imagen>"))
     m = guion.get("marca", {})
