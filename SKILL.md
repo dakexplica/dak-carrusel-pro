@@ -14,7 +14,23 @@ Archivos de la skill:
 - `ejemplos/cafeteria.json`: guion completo de ejemplo (tómalo como modelo).
 - `fuentes/`: tipografías libres (licencia SIL OFL).
 
+- `guia/`: la mini guía interactiva (`estilo.md` + `leccion-1.md` a `leccion-3.md`).
+
 ---
+
+## Primera vez · la mini guía (se ofrece una sola vez)
+
+Al empezar, antes de la entrevista, revisa si existe `~/.dakexplica/carrusel-pro.json`:
+- **Si no existe**, es la primera vez (da igual si la instalaron con el mensaje de la página, con el comando a secas o si piden un carrusel directo). Antes de cualquier otra cosa, ofrécela con botones y todo lo importante dentro de la pregunta:
+  - Pregunta: "Es la primera vez que usas Carrusel Pro. ¿Quieres que te enseñe rápido a usarla y sacarle el mayor provecho? Son unos 5 min, mientras hacemos tu primer carrusel."
+  - **Sí, enséñame (5 min)** — "3 lecciones cortas con tu tema o con uno de ejemplo"
+  - **No, úsala directo** — "hago lo que me pediste; la guía la abres cuando quieras con «ábreme la guía»"
+  - Si no existe la herramienta de botones, el mismo texto con "responde 1 o 2".
+
+  Luego crea el archivo con `{"guia_ofrecida": true}` (crea la carpeta si hace falta). Con **Sí**: lee `guia/estilo.md` y abre `guia/leccion-1.md`. Con **No**: haz directo lo que pidió; si solo instaló, dile qué escribir: «Usando la skill carrusel-pro, hazme un carrusel sobre [tu tema]».
+- **Si existe**, no vuelvas a preguntar: haz el trabajo directo.
+- **En la app de Claude** (no se guardan archivos entre chats): ofrécela solo si la persona acaba de instalarla o pregunta cómo usarla. Nunca en cada carrusel.
+- Frases que abren la guía siempre: «ábreme la guía», «empieza la guía» (desde cero), «retoma la guía» (donde se quedó), «guía lección 2», «sal de la guía».
 
 ## Paso 0 · Revisa que esté todo listo (antes de la entrevista)
 

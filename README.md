@@ -37,9 +37,20 @@ También puedes usar el botón verde **Code → Download ZIP** de esta página: 
 - Serie de 5 carruseles con calendario
 - Descripción + hashtags
 
+## Guía interactiva incluida · 3 pasos · ~5 min
+
+La primera vez que la usas, Claude te pregunta si quieres que te enseñe (puedes decir que no y usarla directo):
+1. **Tu primer carrusel** con tu tema (o uno de ejemplo) en 2 minutos.
+2. **Con tu marca**: la saca de tu web o tu Instagram, o te inventa una, y aprendes a pedir cambios.
+3. **Listo para subir**: Instagram y TikTok, con la descripción y los hashtags.
+
+Ábrela cuando quieras:
+
+> Usando la skill carrusel-pro, empieza la guía
+
 ## Pruébala con esto
 
-> Usando la skill carrusel-pro, hazme un carrusel de 6 láminas sobre cómo preparar un buen café en casa, para la cuenta de una cafetería.
+> Usando la skill carrusel-pro, hazme un carrusel sobre cómo preparar un buen café en casa
 
 Más herramientas gratis: **[dakexplica.derekavelar.com](https://dakexplica.derekavelar.com)** · [github.com/dakexplica](https://github.com/dakexplica)
 
