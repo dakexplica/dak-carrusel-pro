@@ -103,7 +103,8 @@ def lineas(texto, f, ancho):
             actual.append((pal, enf, peg and bool(actual)))
             w_act += (esp if len(actual) > 1 and not peg else 0) + w
         # sin palabra suelta en el último renglón ("…al día / 1"): se baja una palabra del renglón de arriba
-        if res and len(actual) == 1 and len(res[-1]) >= 2 and not actual[0][2]:
+        # (solo si el renglón de arriba se queda con 2 o más palabras: si no, se crea otra palabra suelta)
+        if res and len(actual) == 1 and len(res[-1]) >= 3 and not actual[0][2]:
             prueba = [res[-1][-1]] + actual
             if ancho_linea(prueba, f) <= ancho:
                 res[-1], actual = res[-1][:-1], prueba
