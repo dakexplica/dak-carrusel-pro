@@ -535,6 +535,21 @@ def s_foto(c, s):
     for i in range(zona):
         sd.line([0, c.H - i, c.W, c.H - i], fill=(0, 0, 0, int(225 * (1 - i / zona) ** 1.1)))
     c.img.alpha_composite(sombra)
+    # que el texto blanco SIEMPRE se lea: si donde va el texto la foto sigue clara (fondos blancos, cielos,
+    # azulejos), se oscurece esa zona poco a poco hasta que los puntos más claros queden oscuros.
+    y_tx = int(c.y1 - 560)
+    for _ in range(8):
+        zona_tx = c.img.crop((0, y_tx, c.W, int(c.y1))).convert("L").resize((108, 56))
+        claros = sorted(zona_tx.getdata())[int(108 * 56 * 0.85)]
+        if claros <= 105:
+            break
+        extra = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
+        de = ImageDraw.Draw(extra)
+        for i in range(c.H - y_tx + 160):
+            y = c.H - i
+            a = 46 if y >= y_tx else int(46 * max(0, 1 - (y_tx - y) / 160))
+            de.line([0, y, c.W, y], fill=(0, 0, 0, a))
+        c.img.alpha_composite(extra)
     c.d = ImageDraw.Draw(c.img)
     blanco = (255, 255, 255, 255)
     acento_viejo = c.acento_txt

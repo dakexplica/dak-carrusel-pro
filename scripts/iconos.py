@@ -18,7 +18,7 @@ Figuras:
   ["arco", cx, cy, r, grado_ini, grado_fin, color]
   ["curva", [x, y, x, y, ...], relleno, trazo]   (forma orgánica suave que pasa por los puntos;
                                                 relleno "none" = solo línea abierta)
-  ["texto", x, y, "Hola", tam, color]            (tam en unidades de la caja)
+  ["texto", x, y, "Hola", tam, color]            (x = CENTRO del texto, y = su borde de arriba; tam en unidades de la caja)
 Opcional al final de cualquier figura: {"grosor": 4}
 """
 from PIL import Image, ImageDraw, ImageFont
@@ -54,7 +54,7 @@ EJEMPLOS = {
     "dinero": [
         ["rect", 6, 26, 94, 76, 6, "claro", "tinta"],
         ["circulo", 50, 51, 15, "acento", "tinta"],
-        ["texto", 44, 39, "$", 26, "fondo"],
+        ["texto", 50, 37, "$", 26, "fondo"],
         ["circulo", 20, 51, 4, "tinta", "none"], ["circulo", 80, 51, 4, "tinta", "none"],
     ],
     "grafica": [
@@ -233,7 +233,7 @@ def dibujar(img, figuras, caja, pal, grosor_base=3.2, fuente_ttf=None):
         elif t == "texto" and fuente_ttf:
             x, y, txt, tam, col = fig[1:6]
             f = ImageFont.truetype(fuente_ttf, int(tam * k))
-            d.text((x * k, y * k), txt, font=f, fill=_color(col, pal))
+            d.text((x * k, y * k), txt, font=f, fill=_color(col, pal), anchor="ma")  # x = centro del texto, y = arriba
     capa = capa.resize((lado, lado), Image.LANCZOS)
     img.alpha_composite(capa, (int(ox), int(oy)))
 

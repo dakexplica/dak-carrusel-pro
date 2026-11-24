@@ -208,6 +208,13 @@ def web(url, carpeta):
             except Exception:
                 pass
     candidatos = []
+    # lo que la página declara para su fondo y su texto (body/html/:root) es lo más fiable
+    fondo_dec = tinta_dec = None
+    for bloque in re.findall(r'(?:^|[}\s])(?:body|html|:root)\s*\{([^}]*)\}', css, re.I):
+        mb = re.search(r'background(?:-color)?\s*:\s*(#[0-9a-fA-F]{3,6})\b', bloque)
+        mc = re.search(r'(?<![-\w])color\s*:\s*(#[0-9a-fA-F]{3,6})\b', bloque)
+        if mb and not fondo_dec: fondo_dec = rgb(mb.group(1))
+        if mc and not tinta_dec: tinta_dec = rgb(mc.group(1))
     tema = meta(doc, "theme-color")
     if re.match(r"#[0-9a-fA-F]{3,6}$", tema or ""):
         candidatos.append((rgb(tema), 60))
@@ -289,6 +296,10 @@ def web(url, carpeta):
                     candidatos.append((c, min(k // 80, 12)))
 
     colores, paleta = elegir_colores(candidatos)
+    if fondo_dec and luz(fondo_dec) > 0.6:
+        colores["fondo"] = hexa(fondo_dec)
+    if tinta_dec and contraste(tinta_dec, rgb(colores["fondo"])) >= 7:
+        colores["tinta"] = hexa(tinta_dec)
     fam = letra(doc[:60000] + " " + css)
     fuentes_marca, parecida = {}, ""
     if fam:
