@@ -151,7 +151,10 @@ Muéstralo como lista (lámina por lámina), ajusta lo que pida y sigue. Si dijo
 1. **Descripción lista para pegar**, guardada en `<trabajo>/listo/descripcion.txt` (así sale en la vista): gancho en la primera línea (≤ 70 caracteres), 2 o 3 frases de valor, CTA que aplique, créditos de fotos si hacen falta y de 3 a 6 hashtags.
 2. **Primero la vista:** `python3 <skill>/scripts/vista.py <trabajo>/listo --guion <trabajo>/guion.json` (con `ambos`/`todos` hace sola la de Instagram y la de TikTok, cada una en su carpeta). Enséñala primero: es su carrusel ya publicado, en un iPhone. Luego `_revision.jpg`.
 3. **Texto alternativo** de la portada en una línea.
-4. Dónde quedó: en Claude Code, la carpeta; en la app de Claude, los archivos para descargar.
+4. **Las imágenes, listas para subir:** en orden (`01.png`, `02.png`…; con varias redes, `instagram/`, `tiktok/` y `linkedin/carrusel.pdf`), en buena calidad y en la medida de cada red.
+   - En Claude Code: di la carpeta y ábrela (en Mac `open <carpeta>`; en Windows `explorer <carpeta>`). Para pasarlas al celular: AirDrop (Mac → iPhone), o su Google Drive si lo tiene (abajo).
+   - En la app de Claude: entrégalas como archivos para descargar (las láminas y la descripción), y si son muchas, también un `.zip` con todas.
+   - Con Canva: además, el link para editar y, si quiere, la descarga desde Canva (**Compartir → Descargar**).
 5. **Guarda su marca:** en Claude Code en `~/.carrusel-pro/marca.json` (la próxima vez solo pregunta "¿uso tu marca guardada?"). En la app, el bloque JSON para pegar en las instrucciones de un Proyecto.
 6. Ofrece ajustes concretos en una línea ("¿Cambio el gancho, el estilo o alguna imagen?") y, **una sola vez**, lo que tenga conectado (abajo).
 
@@ -199,6 +202,27 @@ Si pide varios: 5 temas con ángulos distintos (un error común, un paso a paso,
 | No tiene Canva, Express ni Drive | Funciona igual; ofrece una vez conectar Canva (lo que gana y cómo), sin insistir |
 | Tiene Canva | Le ofrece diseñarlo ahí (recomendado), lo enseña dentro del iPhone y le da el link para editar; avisa que las fotos de Canva son de IA |
 | Quiere publicar directo | Le explica en 2 pasos cómo subirlo desde el celular |
+
+## Si algo no se puede: nunca te quedes en el error
+
+Di en una frase qué pasó (sin tecnicismos) y **ofrece siempre la salida**: pregunta si tiene acceso, si te lo puede pasar, o haz la alternativa. Nunca termines un mensaje con solo «no se pudo».
+
+| Lo que pasa | Qué le dices y ofreces |
+|---|---|
+| `NO_ABRE` (su página no deja leerse) | «Tu página no me deja leerla desde fuera. ¿Me mandas una captura de tu página, o tus colores y tu logo?» |
+| Le da un link de Instagram o TikTok | «Instagram no deja leer perfiles desde fuera. ¿Me mandas una captura de tu perfil? O el link de tu página, si tienes» |
+| `LETRA … es propia / de pago` | «Tu letra es de pago, así que usé la gratis más parecida (X). Si tienes el archivo de tu letra (.ttf u .otf), pásamelo y uso la tuya; o te enseño 3 para elegir» |
+| `no encontré su letra` | «No encontré tu letra. ¿Sabes cómo se llama o tienes el archivo? Si no, te enseño 3 que le van a tu marca» |
+| `NADA` (logo de una app) | «No encontré el logo de X. ¿Me pasas la imagen o su página? Si no, la nombro sin logo» |
+| `NADA` (fotos) | Busca de nuevo con otras palabras; si sigue sin haber: «¿Tienes fotos tuyas de esto? Si no, lo hago con un dibujo» |
+| `NO_HAY` (no hay navegador para capturas) | «¿Me mandas una captura de tu página desde tu celular? La pongo dentro del iPhone» |
+| `FALTA_IMAGEN` / `ERROR` | Lo corriges tú en el guion; si es un archivo suyo que no está: «No encuentro X. ¿Lo arrastras aquí o me dices en qué carpeta está?» |
+| Imagen pegada sin archivo (Claude Code) | «¿Me la arrastras al chat o me dices dónde está? Así la puedo usar» |
+| Archivo que no se puede leer (HEIC, SVG, PSD, AI) | «Ese formato no lo puedo usar directo. ¿Me lo pasas en PNG o JPG? (En iPhone: compartir → guardar como JPG)» |
+| Falta Pillow y no quiere instalar | Qué es, por qué hace falta y que sin eso no se dibuja; que lo diga cuando quiera instalarlo |
+| Sin internet | «No tengo internet ahora, así que lo hago con dibujos y tus fotos. Cuando vuelva, puedo buscar fotos y logos» |
+| Canva no está conectado / falla / tarda | Lo hace con Claude y lo dice; ofrece conectarlo o reintentar |
+| No sabe algo de su negocio (precio, horario) | Lo pregunta en una línea; nunca lo inventa |
 
 ## Reglas de oro
 
