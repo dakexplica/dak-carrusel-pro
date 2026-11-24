@@ -296,10 +296,16 @@ def web(url, carpeta):
                     candidatos.append((c, min(k // 80, 12)))
 
     colores, paleta = elegir_colores(candidatos)
-    if fondo_dec and luz(fondo_dec) > 0.6:
+    oscura = bool(fondo_dec and luz(fondo_dec) < 0.06)        # página de fondo oscuro (gimnasios, tech, moda)
+    if fondo_dec and (luz(fondo_dec) > 0.6 or oscura):
         colores["fondo"] = hexa(fondo_dec)
-    if tinta_dec and contraste(tinta_dec, rgb(colores["fondo"])) >= 7:
+    if oscura:
+        colores["tinta"] = hexa(tinta_dec) if tinta_dec and luz(tinta_dec) > 0.6 else "#FFFFFF"
+    elif tinta_dec and contraste(tinta_dec, rgb(colores["fondo"])) >= 7:
         colores["tinta"] = hexa(tinta_dec)
+    # el color de marca que la página declara (theme-color) manda si es un color de verdad (no gris)
+    if re.match(r"#[0-9a-fA-F]{6}$", tema or "") and satur(rgb(tema)) > 0.35:
+        colores["acento"] = tema.upper()
     fam = letra(doc[:60000] + " " + css)
     fuentes_marca, parecida = {}, ""
     if fam:
@@ -323,7 +329,8 @@ def web(url, carpeta):
             fuentes_marca = {}
     datos_marca = {
         "nombre": nombre, "usuario": "", "web": base, "colores": colores, "logo": ruta_logo,
-        "letra_web": fam, "letra_parecida": parecida, "fuentes": fuentes_marca, "estilo_sugerido": estilo_para(fam, colores), "paleta": paleta,
+        "letra_web": fam, "letra_parecida": parecida, "fuentes": fuentes_marca,
+        "estilo_sugerido": "bloque" if oscura else estilo_para(fam, colores), "paleta": paleta,
         "fotos": fotos, "descripcion": meta(doc, "og:description", "description")[:220],
     }
     return datos_marca
