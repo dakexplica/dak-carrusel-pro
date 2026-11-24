@@ -47,7 +47,7 @@ else:
 
 try:
     urllib.request.urlopen(urllib.request.Request("https://commons.wikimedia.org/w/api.php?action=query&format=json",
-                                                  headers={"User-Agent": "carrusel-pro/2.0"}), timeout=5)
+                                                  headers={"User-Agent": "dak-carrusel-pro/1.0"}), timeout=5)
     ok("Internet (marca desde tu página, fotos libres y logos reales)")
 except Exception:
     opc("Sin internet: funciona igual, con dibujos y tus propias fotos")
