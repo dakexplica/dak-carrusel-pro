@@ -355,20 +355,44 @@ class Lienzo:
         self.img.paste(im, (x0, y0), mascara)
         return True
 
-    def fila_logos(self, y, alto=96, claro=True):
-        """Los logos de la marca y de lo que se menciona (marca.logos), en placas blancas, en fila."""
+    def fila_logos(self, y, alto=96, claro=None, x=None, derecha=False, medir=False):
+        """Los logos de la marca y de lo que se menciona (marca.logos), en fila.
+        Por defecto SIN placa (Derek, 26 nov: «no me gusta lo del fondo blanco»): el logo con una sombra suave.
+        La placa blanca sale sola si el logo no se distinguiría del fondo, o siempre con marca.logos_placa = true
+        (false = nunca). Con medir=True solo devuelve el ancho que ocuparía."""
         rutas = [r for r in self.g.get("marca", {}).get("logos", []) if r and os.path.exists(r)]
-        x = self.x0
+        pref = self.g.get("marca", {}).get("logos_placa", "auto") if claro is None else claro
+        piezas = []
         for r in rutas[:5]:
             lg = Image.open(r).convert("RGBA")
             lg.thumbnail((int(alto * 2.6), alto - 22), Image.LANCZOS)
-            pw = max(alto, lg.width + 36)
-            if claro:
-                self.d.rounded_rectangle([x, y, x + pw, y + alto], radius=alto // 2 if lg.width < alto * 1.3 else 16,
-                                         fill=(255, 255, 255, 255))
+            piezas.append(lg)
+        anchos = [max(alto, lg.width + 36) for lg in piezas]
+        total = sum(anchos) + 18 * max(0, len(piezas) - 1)
+        if medir or not piezas:
+            return total if medir else y
+        x = (self.x1 - total) if derecha else (self.x0 if x is None else x)
+        for lg, pw in zip(piezas, anchos):
+            caja = (int(x), int(y), int(x + pw), int(y + alto))
+            placa = pref is True
+            if pref == "auto":
+                # ¿se distingue? compara la luz del logo con la del fondo que tiene detrás
+                detras = self.img.crop(caja).convert("L").resize((16, 16))
+                luz_f = sum(detras.getdata()) / 256 / 255
+                a_ = lg.getchannel("A"); l_ = lg.convert("L")
+                px = [l_.getpixel((i, j)) for i in range(0, lg.width, 3) for j in range(0, lg.height, 3) if a_.getpixel((i, j)) > 128]
+                luz_l = (sum(px) / len(px) / 255) if px else 0.5
+                placa = abs(luz_l - luz_f) < 0.28
+            if placa:
+                self.d.rounded_rectangle(caja, radius=alto // 2 if lg.width < alto * 1.3 else 16, fill=(255, 255, 255, 255))
+            else:
+                sm = Image.new("RGBA", self.img.size, (0, 0, 0, 0))
+                sm.paste((0, 0, 0, 110), (int(x + (pw - lg.width) / 2) + 2, int(y + (alto - lg.height) / 2) + 4), lg.getchannel("A"))
+                self.img.alpha_composite(sm.filter(ImageFilter.GaussianBlur(6)))
             self.img.alpha_composite(lg, (int(x + (pw - lg.width) / 2), int(y + (alto - lg.height) / 2)))
             x += pw + 18
-        return y + alto if rutas else y
+        self.d = ImageDraw.Draw(self.img)
+        return y + alto
 
 
 # ---------- tipos de slide ----------
@@ -377,6 +401,8 @@ def _foto_fondo(c, ruta):
     from PIL import ImageOps
     im = ImageOps.exif_transpose(Image.open(ruta)).convert("RGB")
     l, t, r_, b_ = encuadre.recorte(im, c.W, c.H)
+    esc = c.W / (r_ - l)
+    c.caras = [((f[0] - l) * esc, (f[1] - t) * esc, (f[2] - l) * esc, (f[3] - t) * esc) for f in encuadre.caras(im)]
     c.img.paste(im.crop((l, t, r_, b_)).resize((c.W, c.H), Image.LANCZOS), (0, 0))
     sombra = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
     sd = ImageDraw.Draw(sombra)
@@ -392,7 +418,18 @@ def _foto_fondo(c, ruta):
 def s_portada_sangre(c, s):
     _foto_fondo(c, s["foto"])
     blanco = (255, 255, 255, 255)
-    y = c.fila_logos(c.y0 - 40) + 30
+    # los logos nunca encima de la cara (Derek, 26 nov: «tapaste mi cara con el logo de Claude»)
+    alto_l, y_l = 96, c.y0 - 40
+    ancho_l = c.fila_logos(y_l, alto_l, medir=True)
+    def choca(x0, x1, y0, y1):
+        return any(x0 < f[2] + 40 and x1 > f[0] - 40 and y0 < f[3] + 60 and y1 > f[1] - 80 for f in getattr(c, "caras", []))
+    if ancho_l:
+        if not choca(c.x0, c.x0 + ancho_l, y_l, y_l + alto_l):
+            c.fila_logos(y_l, alto_l)
+        elif not choca(c.x1 - ancho_l, c.x1, y_l, y_l + alto_l):
+            c.fila_logos(y_l, alto_l, derecha=True)
+        else:                       # arriba no hay lugar libre: van justo encima del título, abajo
+            c.fila_logos(c.y1 - 760, 80)
     if s.get("etiqueta"):
         f = fuente(c.p["fuerte"], 30)
         t = s["etiqueta"].upper()
