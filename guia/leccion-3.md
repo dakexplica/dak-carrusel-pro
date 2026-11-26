@@ -24,7 +24,7 @@
 - **Cierra con UNA pregunta, solo si tiene Canva conectado** (revisa antes si tiene sus herramientas en esta sesión; sin Canva, salta a la de Drive): "Lo último: ¿te lo subo a tu **Canva**? Te queda en **Subidos**, listo para retocarlo o publicarlo desde ahí. Funciona con la cuenta gratis y **no gasta tus créditos de IA**. 1 · Sí, súbelo · 2 · No, así está bien"
 
 **ALTO.**
-- **Sí, súbelo:** sigue la «Ruta Canva» del SKILL.md (subir el PDF y las láminas; **nunca** las herramientas de Canva que diseñan con IA). **MENSAJE (cierra el turno):** "Listo: está en tu Canva, en **Subidos** (el PDF y cada lámina). No usé créditos." y "Escríbeme «listo» para terminar." **ALTO.**
+- **Sí, súbelo:** sigue la «Ruta Canva» del SKILL.md (subir el PDF y las láminas; **nunca** las herramientas de Canva que diseñan con IA). **MENSAJE (cierra el turno):** "Listo: está en tu Canva, en **Proyectos → Subidos → Imágenes** (cada lámina, en orden). No usé créditos." y "Escríbeme «listo» para terminar." **ALTO.**
 - **No / así está bien:** si tiene Drive (en la compu o conector), una sola oferta más: "¿Te lo guardo en tu Google Drive para abrirlo en el celular? 1 · Sí · 2 · No". Si no, sigue a la despedida.
 
 ## Mensaje 2 · Despedida (corta, no es un manual)
