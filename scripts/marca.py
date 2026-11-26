@@ -420,7 +420,7 @@ def carpeta_marca(rutas, salida):
     if logo_ruta:
         try:
             for c, k in paleta_de_imagen(Image.open(logo_ruta), 6):
-                candidatos.append((c, min(k // 20, 90)))
+                candidatos.append((c, min(k // 3, 900)))      # el logo es lo más fiable de su marca
         except Exception:
             logo_ruta = ""
 
@@ -433,6 +433,9 @@ def carpeta_marca(rutas, salida):
             im = Image.open(p)
             if min(im.size) >= 500:
                 fotos.append((im.width * im.height, p))
+            else:
+                print(f"AVISO foto muy chica, no la uso en grande: {os.path.basename(p)} ({im.width}×{im.height}). "
+                      "Si es importante, pídele una versión más grande; si no, va en una caja pequeña o se deja fuera")
         except Exception:
             pass
     fotos = [p for _, p in sorted(fotos, reverse=True)][:30]
@@ -445,6 +448,20 @@ def carpeta_marca(rutas, salida):
     if not candidatos:
         candidatos = [((250, 250, 248), 10), ((17, 17, 17), 10)]
     colores, paleta = elegir_colores(candidatos)
+    # logo sobre fondo oscuro (negro con un color vivo): su marca es oscura → fondo oscuro, texto claro,
+    # y de acento el color más vivo del logo (Derek, 26 nov: «los colores no quedaban muy bien»)
+    if logo_ruta:
+        try:
+            pl = paleta_de_imagen(Image.open(logo_ruta), 6)
+            tot = sum(k for _, k in pl) or 1
+            oscuro = [(c, k) for c, k in pl if luz(c) < 0.08]
+            vivos = sorted([c for c, k in pl if satur(c) > 0.35 and 0.08 < luz(c) < 0.9], key=lambda c: -satur(c))
+            if oscuro and sum(k for _, k in oscuro) / tot > 0.35:
+                colores["fondo"] = hexa(oscuro[0][0]); colores["tinta"] = "#F5F6F7"
+            if vivos:
+                colores["acento"] = hexa(vivos[0])
+        except Exception:
+            pass
 
     # sus letras
     fuentes_m, familia = {}, ""
@@ -464,7 +481,25 @@ def carpeta_marca(rutas, salida):
             familia = os.path.splitext(os.path.basename(reg))[0]
         fuentes_m = {"titulo": neg, "titulo_it": italicas[0] if italicas else neg, "texto": reg, "fuerte": neg}
 
-    # hoja de sus fotos con número, para decir «usa la 3 en la portada»
+    # sus fotos de MEJOR a peor (tamaño, nitidez, luz, si sale una persona), para no usar las primeras que salgan
+    if fotos:
+        try:
+            import encuadre
+            notas = {}
+            for p in fotos:
+                try:
+                    notas[p] = encuadre.puntaje(p)
+                except Exception:
+                    notas[p] = (0, ["no se pudo abrir"])
+            fotos.sort(key=lambda p: (encuadre.es_captura(p), -notas[p][0]))   # las capturas, al final
+            caps = [os.path.basename(p) for p in fotos if encuadre.es_captura(p)]
+            if caps:
+                print("CAPTURAS " + " · ".join(caps) + "  (van completas en lámina captura o MacBook, nunca de foto de portada)")
+            print("MEJORES " + " · ".join(f"{i + 1}={os.path.basename(p)} ({notas[p][0]}{', ' + ', '.join(notas[p][1]) if notas[p][1] else ''})"
+                                         for i, p in enumerate(fotos[:15])))
+        except Exception:
+            pass
+    # hoja de sus fotos con número (ya en orden de mejor a peor), para decir «usa la 1 en la portada»
     if fotos:
         os.makedirs(salida, exist_ok=True)
         lado, cols = 300, 5
@@ -477,8 +512,12 @@ def carpeta_marca(rutas, salida):
             fn = ImageFont.load_default()
         for i, p in enumerate(fotos[:15]):
             im = Image.open(p).convert("RGB")
-            ld = min(im.size)
-            im = im.crop(((im.width - ld) // 2, (im.height - ld) // 2, (im.width + ld) // 2, (im.height + ld) // 2)).resize((lado, lado))
+            try:
+                import encuadre
+                im = im.crop(encuadre.recorte(im, 1, 1)).resize((lado, lado))
+            except Exception:
+                ld = min(im.size)
+                im = im.crop(((im.width - ld) // 2, (im.height - ld) // 2, (im.width + ld) // 2, (im.height + ld) // 2)).resize((lado, lado))
             x, y = 16 + (i % cols) * (lado + 16), 16 + (i // cols) * (lado + 16)
             hoja.paste(im, (x, y))
             dh.ellipse([x + 10, y + 10, x + 62, y + 62], fill=(17, 17, 17))

@@ -13,6 +13,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageFilter
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import iconos
 import marcos
+import encuadre
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTES = os.path.join(AQUI, "..", "fuentes")
@@ -33,6 +34,11 @@ PLANTILLAS = {
                    texto="InstrumentSans-Regular.ttf", fuerte="Poppins-Bold.ttf",
                    fondo="#111111", tinta="#FFFFFF", acento="#FF4D2E", enfasis="caja",
                    escala_titulo=0.95),
+    # «pro»: limpia y seria, para LinkedIn, consultoría, B2B y marca personal. Letra sans fuerte, sin adornos.
+    "pro": dict(titulo="Manrope-ExtraBold.ttf", titulo_it="Manrope-ExtraBold.ttf",
+                texto="Manrope-Regular.ttf", fuerte="Manrope-Bold.ttf",
+                fondo="#FFFFFF", tinta="#0B1220", acento="#2457F5", enfasis="color",
+                escala_titulo=0.9),
     "cuaderno": dict(titulo="Kalam-Bold.ttf", titulo_it="Kalam-Bold.ttf",
                      texto="InstrumentSans-Regular.ttf", fuerte="Kalam-Bold.ttf",
                      fondo="#FBF7EE", tinta="#1E2A44", acento="#E63946", enfasis="marcatextos",
@@ -41,6 +47,15 @@ PLANTILLAS = {
 
 
 # ---------- utilidades ----------
+def idioma(g):
+    """Idioma del carrusel: el que diga el guion ("idioma": "en") o el que se nota en sus textos."""
+    if g.get("idioma"):
+        return g["idioma"][:2].lower()
+    txt = " ".join(str(v) for sl in g.get("slides", []) for v in sl.values() if isinstance(v, str)).lower()
+    en = sum(txt.count(w) for w in (" the ", " and ", " you ", " your ", " with ", " is ", " it "))
+    es = sum(txt.count(w) for w in (" el ", " la ", " de ", " que ", " y ", " tu ", " con "))
+    return "en" if en > es else "es"
+
 def hexrgb(h, a=255):
     h = h.lstrip("#")
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (a,)
@@ -177,7 +192,7 @@ class Lienzo:
     def decorar_fondo(self, invertido=False):
         nombre = self.g.get("plantilla", "editorial")
         tipo = getattr(self, "tipo", "")
-        vida = self.g.get("vida", True) and not invertido and nombre != "bloque"
+        vida = self.g.get("vida", True) and not invertido and nombre not in ("bloque", "pro")
         # «vida»: que no se vea plano ni genérico. Las láminas pares de contenido van sobre un tinte del color
         # de la marca y cada lámina lleva una forma grande de su color, que cambia de esquina para dar ritmo.
         if vida and self.n % 2 == 0 and tipo in ("punto", "lista", "pasos", "dato", "cita", "captura", "post"):
@@ -194,8 +209,6 @@ class Lienzo:
             dc.ellipse([cx - r, cy - r, cx + r, cy + r], fill=self.acento[:3] + (45 if arriba else 60,))
             r2 = int(r * 0.17)
             rx, ry = (self.W - r * 0.95, r * 0.12) if arriba else (self.W - r * 1.05, self.H - r * 0.30)
-            if tipo != "portada":          # en la portada ese lugar es del logo
-                dc.ellipse([rx - r2, ry - r2, rx + r2, ry + r2], outline=self.acento[:3] + (140,), width=7)
             self.img.alpha_composite(capa)
         if invertido:
             self.d.rectangle([0, 0, self.W, self.H], fill=self.acento if nombre != "bloque" else self.acento)
@@ -211,6 +224,13 @@ class Lienzo:
             capa.putalpha(ruido.point(lambda v: max(0, v - 118) // 6))
             self.img.alpha_composite(capa)
             self.d.line([self.x0, self.y0 - 30, self.x1, self.y0 - 30], fill=self.tinta, width=2)
+        elif nombre == "pro" and not invertido:
+            # sobria: un tinte apenas distinto en las láminas pares y una barra corta del acento arriba
+            if self.n % 2 == 0 and tipo not in ("foto", "cierre", "portada") and luz(self.fondo) > 0.6:
+                self.fondo = mezcla(self.acento, self.fondo, 0.93)
+                self.d.rectangle([0, 0, self.W, self.H], fill=self.fondo)
+                self.suave = mezcla(self.tinta, self.fondo, 0.38)
+            self.d.rectangle([self.x0, self.y0 - 44, self.x0 + 72, self.y0 - 38], fill=self.acento)
         elif nombre == "bloque" and not invertido:
             self.d.rectangle([0, 0, 22, self.H], fill=self.acento)
 
@@ -270,7 +290,7 @@ class Lienzo:
         x = self.x0
         if logo and os.path.exists(logo):
             lg = Image.open(logo).convert("RGBA")
-            lg.thumbnail((140, 52))
+            lg.thumbnail((210, 72))
             px, py = int(x), int(yb - lg.height / 2 + 14)
             if color is not None:          # sobre el color de la marca o una foto: el logo va en una placa clara
                 self.d.rounded_rectangle([px - 8, py - 8, px + lg.width + 8, py + lg.height + 8], radius=14,
@@ -280,7 +300,7 @@ class Lienzo:
         if usuario:
             self.d.text((x, yb), usuario, font=f, fill=color)
         if desliza:
-            t = "Desliza"
+            t = {"en": "Swipe", "pt": "Deslize", "fr": "Faites défiler"}.get(idioma(self.g), "Desliza")
             ca = self.acento if color == self.suave else color
             xa = self.x1 - 44
             self.d.text((xa - 16 - f.getlength(t), yb), t, font=f, fill=ca)
@@ -292,15 +312,40 @@ class Lienzo:
             self.d.text((self.x1 - f.getlength(t), yb), t, font=f, fill=color)
 
     def foto(self, ruta, caja, radio=28):
+        """Pone una imagen en la caja SIN cortar lo importante:
+        · captura de pantalla o diseño con texto → completa (en MacBook si es horizontal y ancha, si no en tarjeta)
+        · foto que perdería mucho al recortar → completa, con su propio fondo desenfocado a los lados
+        · foto normal → recorte inteligente que nunca corta la cabeza (encuadre.py)"""
         if not ruta or not os.path.exists(ruta):
             return False
         x0, y0, x1, y1 = [int(v) for v in caja]
-        im = Image.open(ruta).convert("RGBA")
         w, h = x1 - x0, y1 - y0
-        esc = max(w / im.width, h / im.height)
-        im = im.resize((math.ceil(im.width * esc), math.ceil(im.height * esc)), Image.LANCZOS)
-        l, t = (im.width - w) // 2, (im.height - h) // 2
-        im = im.crop((l, t, l + w, t + h))
+        im = Image.open(ruta)
+        try:
+            from PIL import ImageOps
+            im = ImageOps.exif_transpose(im)
+        except Exception:
+            pass
+        im = im.convert("RGBA")
+        captura = encuadre.es_captura(ruta)
+        if captura and im.width / im.height > 1.25 and w / h > 1.1:
+            lap = marcos.macbook(im, int(min(w * 0.94, (h - 30) * 1.6 / 1.09)))
+            self.img.alpha_composite(lap, (x0 + (w - lap.width) // 2, y0 + max(0, (h - lap.height) // 2)))
+            return True
+        perdida = encuadre.aviso_proporcion(im, w, h)
+        if captura or perdida > 0.38:
+            # completa: la caja se ajusta a la imagen y se centra (sin franjas ni desenfoques a los lados)
+            esc = min(w / im.width, h / im.height)
+            cabe = im.resize((max(1, int(im.width * esc)), max(1, int(im.height * esc))), Image.LANCZOS)
+            x0 += (w - cabe.width) // 2; y0 += (h - cabe.height) // 2
+            w, h = cabe.width, cabe.height
+            im = cabe
+            if captura:
+                radio = min(radio, 18)
+        else:
+            l, t, r_, b_ = encuadre.recorte(im, w, h)
+            im = im.crop((l, t, r_, b_)).resize((w, h), Image.LANCZOS)
+        x1, y1 = x0 + w, y0 + h
         mascara = Image.new("L", (w, h), 0)
         ImageDraw.Draw(mascara).rounded_rectangle([0, 0, w, h], radius=radio, fill=255)
         if self.g.get("vida", True):          # sombra suave: la foto «flota», no se ve pegada
@@ -310,10 +355,66 @@ class Lienzo:
         self.img.paste(im, (x0, y0), mascara)
         return True
 
+    def fila_logos(self, y, alto=96, claro=True):
+        """Los logos de la marca y de lo que se menciona (marca.logos), en placas blancas, en fila."""
+        rutas = [r for r in self.g.get("marca", {}).get("logos", []) if r and os.path.exists(r)]
+        x = self.x0
+        for r in rutas[:5]:
+            lg = Image.open(r).convert("RGBA")
+            lg.thumbnail((int(alto * 2.6), alto - 22), Image.LANCZOS)
+            pw = max(alto, lg.width + 36)
+            if claro:
+                self.d.rounded_rectangle([x, y, x + pw, y + alto], radius=alto // 2 if lg.width < alto * 1.3 else 16,
+                                         fill=(255, 255, 255, 255))
+            self.img.alpha_composite(lg, (int(x + (pw - lg.width) / 2), int(y + (alto - lg.height) / 2)))
+            x += pw + 18
+        return y + alto if rutas else y
+
 
 # ---------- tipos de slide ----------
+def _foto_fondo(c, ruta):
+    """La foto a toda la lámina con recorte inteligente (no corta la cabeza) y sombra abajo para el texto."""
+    from PIL import ImageOps
+    im = ImageOps.exif_transpose(Image.open(ruta)).convert("RGB")
+    l, t, r_, b_ = encuadre.recorte(im, c.W, c.H)
+    c.img.paste(im.crop((l, t, r_, b_)).resize((c.W, c.H), Image.LANCZOS), (0, 0))
+    sombra = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
+    sd = ImageDraw.Draw(sombra)
+    zona = int(c.H * 0.62)
+    for i in range(zona):
+        sd.line([0, c.H - i, c.W, c.H - i], fill=(0, 0, 0, int(230 * (1 - i / zona) ** 1.1)))
+    for i in range(220):             # y un poco arriba, para que los logos y la etiqueta se lean
+        sd.line([0, i, c.W, i], fill=(0, 0, 0, int(110 * (1 - i / 220))))
+    c.img.alpha_composite(sombra)
+    c.d = ImageDraw.Draw(c.img)
+
+
+def s_portada_sangre(c, s):
+    _foto_fondo(c, s["foto"])
+    blanco = (255, 255, 255, 255)
+    y = c.fila_logos(c.y0 - 40) + 30
+    if s.get("etiqueta"):
+        f = fuente(c.p["fuerte"], 30)
+        t = s["etiqueta"].upper()
+        c.d.rounded_rectangle([c.x0, c.y1 - 640, c.x0 + f.getlength(t) + 44, c.y1 - 584], radius=28, fill=c.acento)
+        c.d.text((c.x0 + 22, c.y1 - 631), t, font=f, fill=blanco if contraste(blanco, c.acento) >= 2.4 else c.tinta)
+    viejo = c.acento_txt
+    c.acento_txt = c.acento if contraste(c.acento, (20, 20, 20)) >= 3 else blanco
+    alto_sub = 150 if s.get("subtitulo") else 0
+    fin = c.texto(s["titulo"], (c.x0, c.y1 - 560, c.x1, c.y1 - 40 - alto_sub), c.p["titulo"], 108 * c.p["escala_titulo"],
+                  blanco, interlineado=1.04, vertical="abajo")
+    if s.get("subtitulo"):
+        c.texto(s["subtitulo"], (c.x0, fin + 26, c.x1, c.y1 - 20), c.p["texto"], 42, (232, 234, 238, 255),
+                enfasis="color", interlineado=1.28, minimo=34)
+    c.acento_txt = viejo
+    c.pie(desliza=True, color=(232, 234, 238, 255))
+
+
 def s_portada(c, s):
     plant = c.g.get("plantilla")
+    if s.get("foto") and os.path.exists(s["foto"]) and (s.get("a_sangre", plant == "pro")) \
+            and not encuadre.es_captura(s["foto"]):
+        return s_portada_sangre(c, s)
     inv = plant == "bloque"
     c.decorar_fondo()
     tinta = c.tinta
@@ -322,7 +423,7 @@ def s_portada(c, s):
     logo = c.g.get("marca", {}).get("logo")
     if logo and os.path.exists(logo):
         lg = Image.open(logo).convert("RGBA")
-        lg.thumbnail((260, 76), Image.LANCZOS)
+        lg.thumbnail((340, 120), Image.LANCZOS)
         c.img.alpha_composite(lg, (int(c.x1 - lg.width), int(y + 30 - lg.height / 2)))
         if not s.get("etiqueta"):
             y += 100
@@ -333,6 +434,8 @@ def s_portada(c, s):
         c.d.rounded_rectangle([c.x0, y, c.x0 + w + 44, y + 60], radius=30, outline=c.acento, width=3)
         c.d.text((c.x0 + 22, y + 10), t, font=f, fill=c.acento)
         y += 110
+    if c.g.get("marca", {}).get("logos"):
+        y = c.fila_logos(y) + 40
     tiene_foto = bool(s.get("foto")) and os.path.exists(s.get("foto", ""))
     tiene_dibujo = bool(s.get("dibujo")) and not tiene_foto
     alto_titulo = (c.y1 - y) * (0.40 if tiene_foto else (0.42 if tiene_dibujo else 0.78))
@@ -354,8 +457,15 @@ def s_punto(c, s):
     y = c.y0
     if s.get("foto"):
         # con su foto: la foto arriba (40 % de la lámina) y la idea abajo; el número va sobre la foto
-        alto_f = (c.y1 - c.y0) * 0.42
+        try:
+            iw, ih = Image.open(s["foto"]).size
+        except Exception:
+            iw, ih = 4, 3
+        vertical = ih > iw * 1.05 and not encuadre.es_captura(s["foto"])
+        alto_f = (c.y1 - c.y0) * (0.52 if vertical else 0.42)
         c.foto(s["foto"], (c.x0, y, c.x1, y + alto_f))
+        if s.get("num") is not None and encuadre.es_captura(s["foto"]):
+            s = dict(s, titulo=(f"{s['num']:02d} · " if isinstance(s["num"], int) else f"{s['num']} · ") + s["titulo"], num=None)
         if s.get("num") is not None:
             f = fuente(c.p["fuerte"], 54)
             t = f"{s['num']:02d}" if isinstance(s["num"], int) else str(s["num"])
@@ -364,7 +474,8 @@ def s_punto(c, s):
             c.d.text((c.x0 + 46, y + 36), t, font=f, fill=c.fondo if contraste(c.fondo, c.acento) >= 2 else c.tinta)
         fin = c.texto(s["titulo"], (c.x0, y + alto_f + 50, c.x1, y + alto_f + 300), c.p["titulo"], 92 * c.p["escala_titulo"],
                       interlineado=1.05)
-        c.d.line([c.x0, fin + 28, c.x0 + 120, fin + 28], fill=c.acento, width=6)
+        if c.g.get("plantilla") != "pro":
+            c.d.line([c.x0, fin + 28, c.x0 + 120, fin + 28], fill=c.acento, width=6)
         if s.get("texto"):
             c.texto(s["texto"], (c.x0, fin + 66, c.x1, c.y1 - 20), c.p["texto"], 50, c.suave, enfasis="color", interlineado=1.32)
         c.pie()
@@ -388,7 +499,8 @@ def s_punto(c, s):
         y += max(0, (c.y1 - 40 - fin_p) * 0.45)
     fin = c.texto(s["titulo"], (c.x0, y, c.x1, y + 330), c.p["titulo"], (108 if s.get("dibujo") else 118) * c.p["escala_titulo"],
                   interlineado=1.05)
-    c.d.line([c.x0, fin + 34, c.x0 + 120, fin + 34], fill=c.acento, width=6)
+    if c.g.get("plantilla") != "pro":
+        c.d.line([c.x0, fin + 34, c.x0 + 120, fin + 34], fill=c.acento, width=6)
     if s.get("texto"):
         c.texto(s["texto"], (c.x0, fin + 80, c.x1, c.y1 - 20), c.p["texto"], 56 if s.get("dibujo") else 60, c.suave,
                 enfasis="color", interlineado=1.38)
@@ -471,12 +583,11 @@ def s_cierre(c, s):
     c.img.paste(Image.new("RGBA", c.img.size, c.acento if plant != "bloque" else c.acento), (0, 0))
     c.d = ImageDraw.Draw(c.img)
     claro = c.fondo if plant != "bloque" else (17, 17, 17, 255)
-    if c.g.get("vida", True):
+    if c.g.get("vida", True) and plant != "pro":
         capa = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
         dc = ImageDraw.Draw(capa)
         r = int(c.W * 0.42)
         dc.ellipse([c.W - r * 0.9, c.H - r * 0.85, c.W + r * 1.1, c.H + r * 1.15], fill=(255, 255, 255, 34))
-        dc.ellipse([-r * 0.5, -r * 0.6, r * 0.55, r * 0.45], outline=(255, 255, 255, 60), width=10)
         c.img.alpha_composite(capa)
         logo = c.g.get("marca", {}).get("logo")
         if logo and os.path.exists(logo):          # su logo grande y transparente, abajo a la derecha
@@ -489,11 +600,14 @@ def s_cierre(c, s):
         c.d = ImageDraw.Draw(c.img)
     if contraste(claro, c.acento) < 3 and contraste(c.tinta, c.acento) > contraste(claro, c.acento):
         claro = c.tinta                                         # acento claro (p. ej. verde lima): texto oscuro
+    if c.g.get("marca", {}).get("logos") and not s.get("dibujo"):
+        c.fila_logos(c.y0 - 20)
     if s.get("dibujo"):
         c.acento, c.fondo = claro, c.acento  # en el cierre el dibujo va en el color claro
         c.dibujo(s["dibujo"], (c.x0, c.y0, c.x0 + 300, c.y0 + 300))
         c.acento, c.fondo = c.fondo, claro
-    fin = c.texto(s["titulo"], (c.x0, c.y0 + (320 if s.get("dibujo") else 0), c.x1, c.y0 + (c.y1 - c.y0) * 0.6), c.p["titulo"],
+    fin = c.texto(s["titulo"], (c.x0, c.y0 + (320 if s.get("dibujo") else (140 if plant == "pro" else 0)), c.x1,
+                                c.y0 + (c.y1 - c.y0) * (0.78 if plant == "pro" else 0.6)), c.p["titulo"],
                   120 * c.p["escala_titulo"], claro, interlineado=1.08, enfasis="subrayado", vertical="centro")
     if s.get("cta"):
         f = fuente(c.p["fuerte"], 40)
@@ -524,17 +638,7 @@ def _titulo_arriba(c, s, alto=300, tam=96):
 
 def s_foto(c, s):
     """Su foto a toda la lámina, con el título encima (sobre una sombra para que se lea)."""
-    im = Image.open(s["foto"]).convert("RGB")
-    esc = max(c.W / im.width, c.H / im.height)
-    im = im.resize((math.ceil(im.width * esc), math.ceil(im.height * esc)), Image.LANCZOS)
-    l, t = (im.width - c.W) // 2, (im.height - c.H) // 2
-    c.img.paste(im.crop((l, t, l + c.W, t + c.H)), (0, 0))
-    sombra = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
-    sd = ImageDraw.Draw(sombra)
-    zona = int(c.H * 0.62)
-    for i in range(zona):
-        sd.line([0, c.H - i, c.W, c.H - i], fill=(0, 0, 0, int(225 * (1 - i / zona) ** 1.1)))
-    c.img.alpha_composite(sombra)
+    _foto_fondo(c, s["foto"])
     # que el texto blanco SIEMPRE se lea: si donde va el texto la foto sigue clara (fondos blancos, cielos,
     # azulejos), se oscurece esa zona poco a poco hasta que los puntos más claros queden oscuros.
     y_tx = int(c.y1 - 560)
@@ -573,6 +677,11 @@ def s_captura(c, s):
     c.decorar_fondo()
     fin = _titulo_arriba(c, s, 260, 88)
     pant = _abre(s.get("captura"), "captura")
+    if pant.width / pant.height > 1.2:
+        lap = marcos.macbook(pant, int(c.x1 - c.x0))
+        c.img.alpha_composite(lap, (int((c.W - lap.width) / 2), int(fin + max(40, (c.y1 - fin - lap.height) / 2))))
+        c.pie()
+        return
     alto = int(min(c.y1 - fin - 50, (c.x1 - c.x0) / 0.4925 * 0.98))
     tel = marcos.iphone(pant, alto)
     x = int((c.W - tel.width) / 2)
@@ -655,11 +764,15 @@ def s_comparacion(c, s):
     for x, t, col in ((c.x0 + 10, s.get("col_a", "Antes"), c.suave), (mid + 36, s.get("col_b", "Ahora"), c.acento_txt)):
         c.d.text((x, y + 10), t.upper(), font=fh, fill=col)
     y += 100
+    negativa = s.get("marcas") == "si_no" or bool(re.search(r"\b(sin|antes|no|nunca|without|before|old|never|mal)\b",
+                                                                   str(s.get("col_a", "Antes")).lower()))
     for a, b in filas:
         for x, txt, ok in ((c.x0 + 10, a, False), (mid + 36, b, True)):
             col = c.acento_txt if ok else mezcla(c.tinta, c.fondo, 0.35)
             if ok:
                 c.d.line([x, y + 26, x + 12, y + 40, x + 34, y + 10], fill=col, width=7, joint="curve")
+            elif not negativa:
+                c.d.ellipse([x + 8, y + 16, x + 24, y + 32], fill=col)
             else:
                 c.d.line([x + 4, y + 12, x + 28, y + 36], fill=col, width=6)
                 c.d.line([x + 28, y + 12, x + 4, y + 36], fill=col, width=6)
@@ -719,6 +832,13 @@ def revisar(guion):
         for k in ("foto", "captura", "avatar"):
             if s.get(k) and not os.path.exists(s[k]):
                 problemas.append(("FALTA_IMAGEN", f"lámina {i}: no existe la imagen «{s[k]}» ({k})"))
+        if s.get("foto") and os.path.exists(s["foto"]):
+            try:
+                ok, notas = encuadre.puntaje(s["foto"])
+                if "chica (se verá borrosa)" in notas or "algo borrosa" in notas:
+                    avisos.append(f"FOTO lámina {i}: «{os.path.basename(s['foto'])}» se verá {', '.join(notas)}; busca una mejor")
+            except Exception:
+                pass
         for it in s.get("logos", []):
             if not it.get("img") or not os.path.exists(it["img"]):
                 problemas.append(("FALTA_IMAGEN", f"lámina {i}: no existe el logo de «{it.get('nombre', '?')}» («{it.get('img')}»)"))
@@ -727,6 +847,22 @@ def revisar(guion):
         if t == "captura" and not s.get("captura"):
             problemas.append(("FALTA_IMAGEN", f"lámina {i}: la lámina captura necesita \"captura\": <imagen>"))
     m = guion.get("marca", {})
+    # ¿menciona apps o marcas conocidas y no trae su logo? (Derek, 24 nov: «no pusiste logos de nada»)
+    claves_texto = ("titulo", "subtitulo", "texto", "etiqueta", "cta", "autor", "post", "col_a", "col_b")
+    todo = " ".join(str(sl.get(k, "")) for sl in guion.get("slides", []) for k in claves_texto).lower()
+    todo += " " + " ".join(str(x) for sl in guion.get("slides", []) for k in ("filas", "items", "pasos")
+                           for x in (sl.get(k) or []) if not isinstance(x, dict)).lower()
+    con_logo = " ".join(os.path.basename(r).lower() for r in m.get("logos", []))
+    con_logo += " " + " ".join(os.path.basename(it.get("img", "")).lower() for sl in guion.get("slides", []) for it in sl.get("logos", []))
+    conocidas = ["claude", "chatgpt", "gemini", "canva", "instagram", "tiktok", "linkedin", "whatsapp", "youtube",
+                 "spotify", "netflix", "notion", "shopify", "excel", "google drive", "gmail"]
+    for marca_ in conocidas:
+        if re.search(r"\b" + marca_ + r"\b", todo) and marca_.split()[0] not in con_logo:
+            avisos.append(f"LOGO mencionas «{marca_}» pero no va su logo: imagenes.py logo \"{marca_}\" <carpeta> "
+                          f"y agrégalo a marca.logos (o a una lámina logos)")
+    col = m.get("colores", {})
+    if col.get("fondo") and col.get("tinta") and contraste(hexrgb(col["fondo"]), hexrgb(col["tinta"])) < 4.5:
+        avisos.append("COLOR el texto casi no se distingue del fondo (contraste < 4.5): oscurece o aclara uno")
     if m.get("logo") and not os.path.exists(m["logo"]):
         avisos.append(f"no existe el logo de la marca «{m['logo']}»: sale sin logo")
     for k, v in (m.get("fuentes") or {}).items():

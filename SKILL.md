@@ -5,8 +5,9 @@ description: >-
   sacada de tu página web o de una captura de tu Instagram, o con TUS cosas (fotos, logo, letra, notas revueltas: en una
   carpeta, arrastradas al chat o como quieras) que ordena y acomoda; fotos libres y logos reales de las apps que se mencionan,
   capturas de tu página dentro de un iPhone, ilustraciones dibujadas a la medida, descripción y hashtags, y una vista
-  de cómo se ve ya publicado. Se conecta con Canva, Adobe Express y Google
-  Drive si los tienes. Incluye una mini guía interactiva de ~5 min. Úsala cuando alguien diga "hazme un carrusel",
+  de cómo se ve ya publicado. Fotos que nunca cortan caras, capturas completas dentro de un iPhone o una MacBook,
+  y un estilo profesional para LinkedIn. Si tienes Canva (también el gratis), te lo sube a tu cuenta sin gastar
+  créditos de IA. Se conecta con Adobe Express y Google Drive si los tienes. Incluye una mini guía interactiva de ~5 min. Úsala cuando alguien diga "hazme un carrusel",
   "carrusel de Instagram sobre…", "post de varias imágenes", "slides para LinkedIn", "convierte este
   artículo/PDF/video en carrusel", "carrusel con mi marca", "con mis fotos", "aquí están mis fotos y mi logo", "plan de carruseles para la semana", "fotos para TikTok
   de…" o "empieza la guía de carrusel", aunque no nombren la skill.
@@ -38,8 +39,8 @@ Nunca exijas nada: usa lo mejor que haya y completa lo que falte. Canva es **opc
 |---|---|
 | Su página o su Instagram | Saca su logo, colores y letra (Paso 2) |
 | Sus fotos, logo, notas (revueltos, como sea) | Los junta y ordena; sus fotos van primero (sección «Si trae su propio contenido») |
-| Canva conectado | Ofrece diseñarlo ahí (recomendado): diseño profesional y editable («Ruta Canva») |
-| Sin Canva | Lo diseña Claude con su marca y «vida» (tintes, formas, fotos con sombra); ofrece conectar Canva una sola vez |
+| Canva conectado (gratis o de pago) | Lo diseña Claude igual y, si quiere, se lo **sube a su Canva** sin gastar créditos de IA («Ruta Canva») |
+| Sin Canva | Lo diseña Claude con su marca, sus fotos y logos reales; no le falta nada |
 | Sin fotos propias | Fotos libres reales del tema y logos reales de las apps (Paso 4) |
 | Un tema donde no aplican fotos (ideas, procesos, conceptos) | Ilustraciones dibujadas a la medida |
 | Nada (ni marca, ni fotos, ni Canva) | Igual sale completo y bonito: estilo recomendado, fotos o dibujos, y te lo enseña publicado |
@@ -73,9 +74,8 @@ Si no dio el tema, pregúntalo primero en una frase ("¿De qué es tu carrusel? 
 1. **¿Dónde lo publicas?** Instagram (recomendado) · TikTok modo foto · LinkedIn (PDF) · Todo lo anterior
 2. **¿Tu marca?** De mi página o mi Instagram (recomendado: "me pasas el link o una captura; no necesito tu contraseña ni entrar a tu cuenta") · Te paso mis cosas ("tu logo, tus fotos, tus colores o tus notas: en una carpeta, arrastradas al chat o como quieras") · Invéntamela · Sin marca. *Si hay marca guardada (`~/.carrusel-pro/marca.json`), esta pregunta es «¿Uso tu marca guardada, [nombre]?»*
 3. **¿Qué imágenes?** Fotos reales + dibujos (recomendado) · Solo dibujos · Mis fotos · Solo texto  *(si ya mandó sus fotos, no lo preguntes: van las suyas)*
-4. **¿Dónde lo diseño?** (revisa antes si tienes herramientas de Canva en esta sesión)
-   - **Con Canva conectado:** **En Canva (recomendado)** — "el diseño más bonito, con fotos e ilustraciones, y te queda editable en tu Canva" · **Aquí, con Claude** — "lo dibujo yo con tu estilo; sale al momento y no necesita nada" · **Los dos**.
-   - **Sin Canva:** «¿Estilo?» Decide tú (recomendado) · Editorial · Minimal · Bloque · Cuaderno (enseña `estilos.jpg` si duda), y **una sola vez**, al entregar, ofrece conectarlo (ver «Ruta Canva»).
+4. **¿Estilo?** Decide tú (recomendado) · Pro (limpio y serio: LinkedIn, B2B, marca personal) · Editorial · Minimal · Bloque · Cuaderno (enseña `estilos.jpg` si duda). Si «decide tú»: **LinkedIn, consultoría, empleo o marca personal → `pro`** (esta regla manda sobre el `estilo_sugerido` de `marca.py`; los colores de su marca sí se usan); comida, moda, belleza → `editorial`; tecnología y servicios → `minimal`; ventas y deporte → `bloque`; tips cercanos → `cuaderno`.
+   - Si tiene Canva conectado, **no preguntes dónde diseñarlo**: lo diseñas tú y al entregar ofreces subirlo a su Canva (ver «Ruta Canva»). Nunca uses la IA de Canva.
 
 El objetivo (vender, enseñar, marca personal) y el tono los deduces del tema y de su página; no los preguntes.
 
@@ -98,8 +98,20 @@ El objetivo (vender, enseñar, marca personal) y el tono los deduces del tema y 
 La persona decide cómo te lo da, y la skill lo resuelve siempre: **una carpeta**, **imágenes o archivos arrastrados al chat**, **texto pegado**, **un documento** (PDF, Word, notas), **el link de su página**, o todo mezclado. Puede estar revuelto: tu trabajo es ordenarlo.
 1. **Junta todo:** `python3 <skill>/scripts/marca.py archivos <cada archivo o carpeta que te dio> --carpeta <trabajo>/marca`. En la app de Claude, lo que sube está en `/mnt/user-data/uploads/`. En Claude Code, si pegó una imagen sin archivo, pídele que la **arrastre** al chat (así llega con su ruta) o que te diga en qué carpeta está. Si además dio su página, corre también `marca.py web` y quédate con lo mejor de cada uno (lo suyo manda).
 2. **Lee su contenido** (la línea `TEXTOS` y lo que pegó en el chat; un PDF con tu herramienta de leer; un Word en Mac con `textutil -convert txt <archivo> -output <trabajo>/texto.txt`). **El carrusel sale de SUS ideas:** ordénalas, escoge el gancho, quita lo repetido y escribe cada lámina con sus datos (promos, horarios, precios tal cual los dio). No inventes nada que no esté ahí; si falta algo importante, pregúntalo en una línea.
-3. **Acomoda sus fotos:** mira `tus-fotos.jpg` (numeradas) y pon cada foto donde mejor cuente la idea: la más llamativa en la portada, una lámina `foto` a pantalla completa para la que más impacta, y `"foto"` en las láminas `punto`. **Sus fotos van primero**; fotos libres o dibujos solo para huecos, y dilo ("la lámina 3 no tenía foto tuya: le puse un dibujo").
-4. Su logo, sus colores y su letra salen de lo mismo (Paso 2). Nunca muevas, renombres ni borres sus archivos: se usan donde están.
+3. **Elige las MEJORES fotos, no las primeras:** `marca.py archivos` las ordena de mejor a peor (`MEJORES …`: tamaño, nitidez, luz y si sale una persona) y `tus-fotos.jpg` las enseña en ese orden. Usa las de arriba. Sus fotos van primero **aunque sean chicas**, pero una marcada `chica` o `borrosa` va solo en caja pequeña (lámina `punto`), nunca a toda la lámina ni en la portada; en ese caso pídele en una línea una versión más grande ("¿Tienes esta foto más grande? Se vería mejor en la portada"). Las `CAPTURAS` (su página, su app) van en lámina `captura`, nunca de foto. Si la persona aparece en sus fotos, la mejor de ella va en la portada a toda la lámina. Ante la duda entre dos, mira las dos en grande antes de decidir.
+4. **Acomoda sus fotos:** pon cada foto donde mejor cuente la idea: la más llamativa en la portada, una lámina `foto` a pantalla completa para la que más impacta, y `"foto"` en las láminas `punto`. **Sus fotos van primero**; fotos libres o dibujos solo para huecos, y dilo ("la lámina 3 no tenía foto tuya: le puse un dibujo").
+5. Su logo, sus colores y su letra salen de lo mismo (Paso 2). Nunca muevas, renombres ni borres sus archivos: se usan donde están.
+
+## Detalles que no se adivinan
+
+- **`usuario` del pie:** su @ de Instagram o TikTok; en LinkedIn, su nombre y su cargo o empresa ("Ana López · Fuerza Lab"). Si no lo sabes, pregúntalo en la ronda única; nunca dejes «tu_cuenta».
+- **Varias láminas `punto` seguidas están bien** (un carrusel de "3 errores" son 3 puntos): que cambien entre ellas (foto en una, dibujo en otra, foto de otro tamaño), no que cambie el tipo a la fuerza.
+- **LinkedIn:** la vista que se enseña es la de Instagram (es la misma imagen) y se entrega el `carrusel.pdf`, que es lo que se sube a LinkedIn.
+
+## Colores que combinan (Derek, 24 nov: «los colores no quedaban muy bien»)
+
+- **Una sola marca manda los colores.** Si el carrusel mezcla varias (su club, la app de la que habla, su web personal), elige la de la persona (o la de su empresa) para fondo, texto y acento. Las demás aparecen **solo con su logo**, nunca con su color (nada de azul de una + naranja de otra + crema de una tercera).
+- Fondo claro o muy oscuro, texto con contraste alto (el motor avisa `AVISO COLOR`), **un solo acento** para resaltar. En `pro`, lo más seguro: blanco + casi negro + el color principal de su marca.
 
 ## Paso 3 · El texto de cada lámina (enséñalo antes de diseñar)
 
@@ -131,6 +143,8 @@ Muéstralo como lista (lámina por lámina), ajusta lo que pida y sigue. Si dijo
 
 ## Paso 4 · Las imágenes (realistas siempre que se pueda)
 
+- **Nunca se corta una cara ni una captura (lo hace el motor solo):** cada foto se encuadra buscando a la persona (nunca corta la cabeza); si recortarla haría perder demasiado, sale completa con su propio fondo desenfocado. Las **capturas de pantalla y los diseños con texto nunca se recortan**: una captura vertical va completa en un iPhone (`captura`) y una horizontal (una web, un panel) completa en una MacBook (pon la captura en `"foto"` de una lámina `punto` o en `captura`). Tú solo revisa en `_revision.jpg` que se vea bien.
+- **Logos: los de su marca y los de TODO lo que se menciona, siempre (Derek, 24 nov: «no pusiste logos de nada»).** Su empresa o club (de sus archivos o su página) y cada app o marca que nombra el carrusel (Claude, Canva, Instagram…) van en `marca.logos` (fila de logos en la portada y el cierre) o en una lámina `logos`. El motor avisa `AVISO LOGO mencionas «X»…`: si sale, bájalo y vuelve a dibujar.
 - **Logos reales, siempre:** si una lámina nombra una app o marca (Instagram, Canva, WhatsApp…), lleva su logo real: `python3 <skill>/scripts/imagenes.py logo "<app>" <trabajo>/img` (los más usados ya vienen revisados; para otros, si dice "revísalo", míralo antes de usarlo: si es una versión vieja o la palabra en vez del ícono, prueba con `--dominio <su página>` para el ícono oficial). Si imprime `NADA`, pide el PNG. Nunca un ícono inventado. Los logos solo nombran la app; nunca hacen parecer que la marca patrocina el carrusel.
 - **Fotos libres:** `imagenes.py fotos "<qué, mejor en inglés>" 4 <trabajo>/img` → **míralas** y elige (que se vea el tema de un vistazo); si ninguna sirve, busca otra vez con otras palabras (más concretas, en inglés) antes de rendirte. Si la licencia es CC BY o CC BY-SA, el crédito va al final de la descripción ("Foto: Autor, CC BY-SA"); está en `creditos.txt`.
 - **Su página en un iPhone:** `captura.py <su link> <trabajo>/img/pagina.png` → lámina `captura`. Si imprime `NO_HAY`, pídele una captura de su celular. Sus propias capturas de celular se usan tal cual.
@@ -139,11 +153,11 @@ Muéstralo como lista (lámina por lámina), ajusta lo que pida y sigue. Si dijo
 
 ## Paso 5 · Diseñar y revisar
 
-1. Guion en `<trabajo>/guion.json` (trabajo = `~/carrusel-pro/<tema-corto>/`, o la carpeta que diga; nunca muevas ni borres sus archivos). Campos: `marca` {nombre, usuario, colores {fondo, tinta, acento}, logo, fuentes {titulo, texto}}, `plantilla` (editorial | minimal | bloque | cuaderno), `formato` (instagram | tiktok | linkedin | ambos | todos), `pdf` (true para sacar también PDF), `slides`. Las rutas pueden ser relativas al guion.
+1. Guion en `<trabajo>/guion.json` (trabajo = `~/carrusel-pro/<tema-corto>/`, o la carpeta que diga; nunca muevas ni borres sus archivos). Campos: `marca` {nombre, usuario, colores {fondo, tinta, acento}, logo, fuentes {titulo, texto}}, `plantilla` (pro | editorial | minimal | bloque | cuaderno), `idioma` (es | en…; si no, se detecta), `marca.logos` [rutas de logos], `formato` (instagram | tiktok | linkedin | ambos | todos), `pdf` (true para sacar también PDF), `slides`. Las rutas pueden ser relativas al guion.
    Modelo completo: `ejemplos/cafeteria.json` (portada con foto, `punto`, `antes_despues`, `pasos`, `comparacion`, `cierre`). Las que no trae, así:
    `{"tipo": "logos", "titulo": "Se conecta con *tus apps*", "logos": [{"img": "img/logo-canva.png", "nombre": "Canva"}, {"img": "img/logo-instagram.png", "nombre": "Instagram"}]}` · `{"tipo": "captura", "titulo": "Así se ve *en tu celular*", "captura": "img/pagina.png"}` (primero bájalos con `imagenes.py logo` / `captura.py`).
 2. `python3 <skill>/scripts/carrusel.py <trabajo>/guion.json <trabajo>/listo`. Antes de dibujar revisa todo: si dice `FALTA_IMAGEN` o `ERROR`, no dibujó nada; corrige lo que dice y repite. `AVISO` = sale, pero sin eso (p. ej. sin logo).
-3. **Mira `_revision.jpg`** y, si hace falta, cada PNG: texto cortado o encimado, dibujos que tapan texto, contraste bajo, láminas con demasiado texto o vacías, faltas de ortografía, logo correcto. Corrige y vuelve a renderizar. **Nunca entregues sin mirar.**
+3. **Mira `_revision.jpg`** y, si hace falta, cada PNG: **ninguna cara ni captura cortada**, logos presentes y que se reconozcan, colores que combinan, texto cortado o encimado, dibujos que tapan texto, contraste bajo, láminas con demasiado texto o vacías, faltas de ortografía, logo correcto. Corrige y vuelve a renderizar. **Nunca entregues sin mirar.**
 4. TikTok: el motor deja libre la zona de los botones y la descripción; revisa abajo a la derecha. Cada formato se acomoda solo (no es la misma imagen estirada).
 
 ## Paso 6 · Entregar
@@ -158,20 +172,19 @@ Muéstralo como lista (lámina por lámina), ajusta lo que pida y sigue. Si dijo
 5. **Guarda su marca:** en Claude Code en `~/.carrusel-pro/marca.json` (la próxima vez solo pregunta "¿uso tu marca guardada?"). En la app, el bloque JSON para pegar en las instrucciones de un Proyecto.
 6. Ofrece ajustes concretos en una línea ("¿Cambio el gancho, el estilo o alguna imagen?") y, **una sola vez**, lo que tenga conectado (abajo).
 
-## Ruta Canva (la versión más bonita; nunca obligatoria)
+## Ruta Canva (gratis, sin gastar créditos de IA; nunca obligatoria)
 
-Con Canva el carrusel sale **con diseño de nivel agencia**: fotos e ilustraciones a la medida, composiciones variadas y editable en su cuenta. Claude pone lo que Canva no sabe hacer solo: **el texto de cada lámina, su marca y el orden**; Canva pone el diseño.
-- **Si no lo tiene conectado**, ofrécelo una vez, con lo que gana y sin presionar: "Si conectas Canva (gratis, en claude.ai: **Configuración → Conectores → Canva**; en Claude Code, en la lista de conectores), te lo dejo diseñado ahí, con fotos e ilustraciones y editable. Sin eso funciona igual." Botones **Quiero conectarlo** · **Así está bien**. Con lo primero, los pasos con los nombres reales de los menús y espera a que diga que ya.
-- **Su marca en Canva:** si tiene un kit de marca (herramienta de listar kits de marca), pregunta «¿Uso tu kit de marca de Canva?». Si no, pasa sus colores hex, su letra y su @ en el brief.
-- **Cómo pedirlo:** usa la herramienta de crear diseño de Canva (`create-design`; si no existe, `generate-design` → `create-design-from-candidate`) con un brief que diga: «Carrusel de Instagram de N láminas (vertical)», el nombre y @ de la marca, sus colores hex, el estilo y la letra, y **el texto exacto de cada lámina, numerado** (el que aprobó en el Paso 3). Formato «Instagram Post (Portrait)» (TikTok: «Your Story»). Espera el trabajo con la herramienta de consultar el trabajo, respetando los segundos que pide.
-- **Revísalo y enséñalo como publicado:** exporta las láminas en PNG (`export-design`, ancho 1080), guárdalas como `01.png`, `02.png`… en `<trabajo>/canva/` (bajar los PNG de su propio diseño está bien) y corre `vista.py <trabajo>/canva --marca <trabajo>/marca/marca.json`. Compara con el guion (que esté todo el texto, en orden y sin faltas); si algo falta o cambió, corrígelo con las herramientas de editar de Canva o dilo. Entrega **la vista + el link para editar en Canva**.
-- **Fotos de Canva = generadas por IA:** dilo siempre en una línea ("las fotos de pan las creó la IA de Canva; si quieres las tuyas, súbelas a tu Canva y las pongo"). Para un negocio real, sus fotos van primero: si están en su Canva, pásalas como referencias; si solo están en la compu, dile que las suba a Canva (**Subidos → Subir archivos**) o usa la ruta de Claude para esas láminas. Nunca presentes fotos de IA como si fueran de su local o sus productos.
-- Si Canva falla o tarda demasiado, dilo claro y entrega la versión de Claude, que ya tienes.
+**Nunca uses las herramientas de Canva que diseñan o generan con su IA**: `create-design`, `generate-design`, `generate-design-structured`, `create-design-from-candidate`, `generate-image`, ni `resize-design` (cambiar tamaño es de pago). Gastan los créditos de IA de la persona (en la cuenta gratis se acaban rápido: «quota exceeded») y el resultado no es el suyo. La calidad la pone esta skill.
+Lo que **sí** se puede con cualquier cuenta de Canva, también la gratis, y no gasta nada:
+- **Subirle su carrusel a su Canva:** con la herramienta de subir archivos de Canva (`create-upload-url` y luego un POST del archivo, ver su descripción) sube el `carrusel.pdf` y las láminas `01.png…`. Le quedan en **Canva → Subidos**, listas para usar en un diseño, editar encima o publicar desde ahí. Dile eso tal cual y que no gastó créditos.
+- **Sus fotos que ya están en Canva:** si dice que sus fotos están en Canva, que las descargue de **Subidos** o te diga cuáles; con un diseño suyo que ya existe puedes leerlo, exportarlo (`export-design`) o editar texto o imágenes (`edit-design`) sin IA.
+- **Si no lo tiene conectado**, no hace falta: el carrusel ya sale completo. Solo si pregunta por Canva, explica cómo conectarlo (en claude.ai: **Configuración → Conectores → Canva**; en Claude Code, en la lista de conectores) y lo que gana: tenerlo en su cuenta para retocarlo.
+- Si una herramienta de Canva falla o pide créditos, dilo en una línea y entrega los archivos, que ya tiene.
 
 ## Conectores (opcionales, nunca obligatorios)
 
 Antes de ofrecer uno, revisa qué herramientas tienes de verdad en esta sesión y ofrece **solo las que existen**, con lo que gana la persona. Si no lo tiene, una línea de cómo conectarlo (en claude.ai: **Configuración → Conectores**), gratis, y sigues sin él.
-- **Canva:** ver «Ruta Canva» arriba. Si además quiere los PNG de Claude en su Canva: canva.com → **Subidos** → arrastra las láminas.
+- **Canva:** ver «Ruta Canva» arriba (subirlo a su Canva, sin créditos de IA).
 - **Adobe Express:** igual, con sus herramientas (crear desde HTML o plantilla); entrega el link de edición. Si falla, dilo claro y entrega los PNG.
 - **Google Drive:** en Claude Code, si el Paso 0 encontró la carpeta de Drive, ofrece copiar ahí `Carrusel Pro/<tema>/` (láminas + descripción) para abrirlo en el celular y subirlo desde ahí. En la app, si el conector de Drive deja crear archivos, súbelos. Pide permiso antes de guardar.
 - **Instagram y TikTok:** la skill no publica por ti (eso pide entrar a tu cuenta). Las láminas quedan listas en orden: en el celular, **+ → Publicación → selecciona varias** (Instagram) o **+ → Fotos** (TikTok), y pegas la descripción.
@@ -199,8 +212,10 @@ Si pide varios: 5 temas con ángulos distintos (un error común, un paso a paso,
 | No quiere instalar Pillow | Explica que sin eso no se dibuja y qué hacer; no sigue a medias |
 | App de Claude (sin internet en el código) | Lee su página con la herramienta web, pide logos como archivo, o dibujos |
 | Sin internet | Todo con dibujos y sus fotos; el aviso de versión no dice nada |
-| No tiene Canva, Express ni Drive | Funciona igual; ofrece una vez conectar Canva (lo que gana y cómo), sin insistir |
-| Tiene Canva | Le ofrece diseñarlo ahí (recomendado), lo enseña dentro del iPhone y le da el link para editar; avisa que las fotos de Canva son de IA |
+| No tiene Canva, Express ni Drive | Funciona igual, con la misma calidad; no insiste con conectar nada |
+| Tiene Canva (gratis o de pago) | Lo diseña Claude y, si quiere, se lo sube a su Canva (Subidos) sin gastar créditos de IA; nunca usa la IA de Canva |
+| Sus fotos son de cuerpo completo o salen varias personas | El encuadre nunca corta cabezas; si no cabe bien, la foto sale completa |
+| Mezcla de marcas (su empresa + la app de la que habla) | Colores de una sola marca; las demás solo con su logo |
 | Quiere publicar directo | Le explica en 2 pasos cómo subirlo desde el celular |
 
 ## Si algo no se puede: nunca te quedes en el error
@@ -221,7 +236,7 @@ Di en una frase qué pasó (sin tecnicismos) y **ofrece siempre la salida**: pre
 | Archivo que no se puede leer (HEIC, SVG, PSD, AI) | «Ese formato no lo puedo usar directo. ¿Me lo pasas en PNG o JPG? (En iPhone: compartir → guardar como JPG)» |
 | Falta Pillow y no quiere instalar | Qué es, por qué hace falta y que sin eso no se dibuja; que lo diga cuando quiera instalarlo |
 | Sin internet | «No tengo internet ahora, así que lo hago con dibujos y tus fotos. Cuando vuelva, puedo buscar fotos y logos» |
-| Canva no está conectado / falla / tarda | Lo hace con Claude y lo dice; ofrece conectarlo o reintentar |
+| Canva no está conectado / falla / pide créditos | Entrega los archivos (ya están listos) y lo dice; nunca intenta con la IA de Canva |
 | No sabe algo de su negocio (precio, horario) | Lo pregunta en una línea; nunca lo inventa |
 
 ## Reglas de oro
@@ -230,4 +245,6 @@ Di en una frase qué pasó (sin tecnicismos) y **ofrece siempre la salida**: pre
 - Logos de terceros solo para nombrar su app; su propio logo sí en todas.
 - Fotos solo de licencias libres y con crédito cuando lo piden; nunca fotos de personas reales presentadas como clientes.
 - Nada de texto diminuto: si no se lee en el celular, sobra.
+- Nunca una cara cortada, una captura recortada ni una foto borrosa en grande. Nunca un carrusel sin los logos de lo que menciona.
+- Nunca gastes créditos de la persona (IA de Canva u otros) sin que lo pida.
 - La persona decide; tú propones lo mejor y explicas en una línea por qué.

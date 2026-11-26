@@ -5,10 +5,12 @@ Le dices a Claude **"hazme un carrusel sobre…"** y te entrega un carrusel **co
 - **Se adapta a tu marca:** le pasas el link de tu página (o una captura de tu perfil de Instagram) y saca tu logo, tus colores, **tu letra** y hasta fotos tuyas; o le dices qué letra quieres y te enseña 3 para elegir. Sin marca, sale un diseño neutro y limpio.
 - **Con lo tuyo, aunque esté revuelto:** pásale tus fotos, tu logo, tu letra o tus notas como quieras (una carpeta, arrastradas al chat, un documento o texto pegado) y lo ordena: escribe cada lámina con tus ideas y acomoda cada foto donde mejor queda.
 - **Imágenes reales:** fotos libres de uso del tema (con su crédito) y los logos reales de las apps que mencionas.
-- **Tu página dentro de un iPhone**, paso a paso, comparaciones, listas, datos con fuente y 4 estilos (Editorial, Minimal, Bloque y Cuaderno).
+- **Tu página dentro de un iPhone** (o tu panel dentro de una MacBook), paso a paso, comparaciones, listas, datos con fuente y 5 estilos (Pro, Editorial, Minimal, Bloque y Cuaderno). **Pro** es limpio y serio, pensado para LinkedIn y marca personal.
+- **Fotos que nunca cortan caras:** elige tus mejores fotos (descarta las borrosas o chicas) y las encuadra sin cortar a la persona. Las capturas de pantalla salen siempre completas.
+- **Logos de todo lo que mencionas:** el de tu marca y el de cada app o empresa que nombras (Claude, Instagram, WhatsApp…), sin que lo pidas.
 - **Así se ve publicado:** tu carrusel dentro de un iPhone, en Instagram y en TikTok, antes de subirlo.
 - **Instagram (4:5), TikTok (modo foto) y LinkedIn (PDF)** a la vez, cada uno acomodado a su medida.
-- **Con Canva, si lo tienes (opcional):** te pregunta si lo diseña en tu Canva, con diseño profesional y editable. Si no lo tienes, lo hace igual aquí mismo.
+- **Con Canva, si lo tienes (opcional, también el gratis):** te sube el carrusel a tu Canva para retocarlo. **No usa la IA de Canva ni gasta tus créditos.**
 - **Se adapta a lo que tengas:** con tus fotos, con Canva o desde cero (fotos reales o dibujos a la medida). Una sola ronda de preguntas y a trabajar.
 
 Incluye una **mini guía interactiva** de unos 5 minutos (3 pasos): tu primer carrusel, con tu marca, y listo para subir.

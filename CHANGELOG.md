@@ -8,8 +8,11 @@
 - **Así se ve publicado:** te enseña tu carrusel dentro de un iPhone, en Instagram y en TikTok, antes de subirlo.
 - **LinkedIn:** también te lo deja en PDF, que es como LinkedIn muestra los carruseles.
 - **Rápida:** una sola ronda de preguntas y a trabajar.
-- **Canva (opcional):** si lo tienes conectado, te pregunta si lo diseña ahí (diseño profesional y editable en tu cuenta) y te lo enseña dentro del iPhone; si no, lo hace igual y te ofrece conectarlo. También Adobe Express y Google Drive.
-- **Con vida aunque no uses Canva:** fondos que alternan con el color de tu marca, formas de color, fotos con sombra y tu logo en la portada y el cierre.
+- **Fotos que nunca cortan caras:** ordena tus fotos de mejor a peor, descarta las borrosas o chicas y encuadra a la persona sin cortarle la cabeza. Las capturas de pantalla salen completas, en un iPhone o una MacBook.
+- **Logos de todo lo que mencionas:** el de tu marca y el de cada app o empresa que nombras; si falta uno, la skill lo nota sola.
+- **Estilo Pro:** limpio y serio para LinkedIn y marca personal, con tu foto a toda la portada. Colores de una sola marca para que combinen.
+- **Canva (opcional, también la cuenta gratis):** te sube el carrusel a tu Canva para retocarlo, sin usar su IA ni gastar créditos. También Adobe Express y Google Drive.
+- **Con vida aunque no uses Canva:** fondos que alternan con el color de tu marca, fotos con sombra y tus logos en la portada y el cierre.
 - Revisa sola lo que te falta y te pide permiso antes de instalar nada. Aviso silencioso de versiones nuevas.
 - Mini guía interactiva de 3 pasos (~5 min): tu primer carrusel, con tu marca y listo para subir.
 

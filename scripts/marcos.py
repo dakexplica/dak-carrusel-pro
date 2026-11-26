@@ -87,3 +87,33 @@ def con_barra(im):
     out.paste(b, (0, 0))
     out.paste(im, (0, b.height))
     return out
+
+
+def macbook(pantalla, ancho, sombra=True):
+    """Pone una captura horizontal (web, panel, app de compu) COMPLETA dentro de una MacBook de frente.
+    La captura nunca se recorta: se ajusta entera a la pantalla 16:10 (con barra del color de su borde si sobra)."""
+    bisel = max(10, int(ancho * 0.022))
+    sw = ancho - 2 * bisel
+    sh = int(sw / 1.6)
+    p = pantalla.convert("RGB")
+    esc = min(sw / p.width, sh / p.height)
+    p = p.resize((max(1, int(p.width * esc)), max(1, int(p.height * esc))), Image.LANCZOS)
+    borde = p.getpixel((p.width // 2, min(p.height - 1, 2)))
+    scr = Image.new("RGB", (sw, sh), borde)
+    scr.paste(p, ((sw - p.width) // 2, (sh - p.height) // 2))
+    tapa_h = sh + 2 * bisel
+    base_h = max(10, int(ancho * 0.03))
+    W, H = ancho + int(ancho * 0.12), tapa_h + base_h + (40 if sombra else 0)
+    out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ox = (W - ancho) // 2
+    if sombra:
+        s = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        ImageDraw.Draw(s).rounded_rectangle([ox + 20, tapa_h - 10, ox + ancho - 20, tapa_h + base_h + 22], radius=20, fill=(0, 0, 0, 90))
+        out.alpha_composite(s.filter(ImageFilter.GaussianBlur(18)))
+    d = ImageDraw.Draw(out)
+    d.rounded_rectangle([ox, 0, ox + ancho, tapa_h], radius=int(bisel * 1.6), fill=(14, 15, 18), outline=(120, 124, 132), width=2)
+    out.paste(scr, (ox + bisel, bisel))
+    # base plateada, más ancha que la tapa
+    d.rounded_rectangle([0, tapa_h - 2, W - 1, tapa_h + base_h], radius=base_h // 2, fill=(200, 204, 210), outline=(150, 154, 160), width=1)
+    d.rounded_rectangle([W // 2 - ancho // 10, tapa_h - 2, W // 2 + ancho // 10, tapa_h + base_h // 3], radius=6, fill=(170, 174, 180))
+    return out
