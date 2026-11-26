@@ -81,6 +81,17 @@ def fuente(nombre, tam):
     return ImageFont.truetype(ruta, int(tam))
 
 
+def medio_x(nombre_fuente, tam, y):
+    """Altura del centro de las letras minúsculas de una línea dibujada en y (para alinear viñetas, ✓ y ✗)."""
+    bb = fuente(nombre_fuente, tam).getbbox("x")
+    return y + (bb[1] + bb[3]) / 2
+
+
+def centrado(d, cx, cy, t, f, fill):
+    """Texto centrado EXACTO en (cx, cy), con la medida real de la letra (números en círculos y píldoras)."""
+    d.text((cx, cy), t, font=f, fill=fill, anchor="mm")
+
+
 def tokens(texto):
     """'Hola *mundo*: bonito' -> [('Hola', False), ('mundo', True), (':', False) pegado, ('bonito', False)].
     Devuelve (palabra, énfasis, pegado_a_la_anterior)."""
@@ -508,7 +519,7 @@ def s_punto(c, s):
             t = f"{s['num']:02d}" if isinstance(s["num"], int) else str(s["num"])
             w = f.getlength(t)
             c.d.rounded_rectangle([c.x0 + 24, y + 24, c.x0 + 24 + w + 44, y + 24 + 84], radius=42, fill=c.acento)
-            c.d.text((c.x0 + 46, y + 36), t, font=f, fill=c.fondo if contraste(c.fondo, c.acento) >= 2 else c.tinta)
+            centrado(c.d, c.x0 + 24 + (w + 44) / 2, y + 24 + 42, t, f, c.fondo if contraste(c.fondo, c.acento) >= 2 else c.tinta)
         fin = c.texto(s["titulo"], (c.x0, y + alto_f + 50, c.x1, y + alto_f + 300), c.p["titulo"], 92 * c.p["escala_titulo"],
                       interlineado=1.05)
         if c.g.get("plantilla") != "pro":
@@ -557,14 +568,14 @@ def s_lista(c, s):
     alto = min((c.y1 - y) / max(1, len(items)), 210)
     for i, it in enumerate(items):
         r = 26
-        cy = y + 40
+        cy = medio_x(c.p["texto"], 48, y + 8)
         if s.get("marca") == "check" or c.g.get("plantilla") == "cuaderno":
             c.d.line([c.x0, cy, c.x0 + 16, cy + 18, c.x0 + 44, cy - 20], fill=c.acento, width=8, joint="curve")
         else:
             c.d.ellipse([c.x0, cy - r, c.x0 + 2 * r, cy + r], fill=c.acento)
             f = fuente(c.p["fuerte"], 30)
             t = str(i + 1)
-            c.d.text((c.x0 + r - f.getlength(t) / 2, cy - 20), t, font=f, fill=c.fondo)
+            centrado(c.d, c.x0 + r, cy, t, f, c.fondo)
         c.texto(it, (c.x0 + 80, y + 8, c.x1, y + alto - 16), c.p["texto"], 48, enfasis="color",
                 interlineado=1.25, minimo=30)
         y += alto
@@ -751,7 +762,7 @@ def s_post(c, s):
         c.d.ellipse([ax, ay, ax + 2 * r, ay + 2 * r], fill=c.acento)
         ini = (s.get("nombre") or "?")[:1].upper()
         fi = fuente("InstrumentSans-Bold.ttf", 46)
-        c.d.text((ax + r - fi.getlength(ini) / 2, ay + 20), ini, font=fi, fill=(255, 255, 255))
+        centrado(c.d, ax + r, ay + r, ini, fi, (255, 255, 255))
     c.d.text((ax + 2 * r + 24, ay + 6), s.get("nombre", ""), font=f_nom, fill=(15, 20, 25))
     c.d.text((ax + 2 * r + 24, ay + 54), s.get("usuario", ""), font=f_usr, fill=(83, 100, 113))
     y = ay + 2 * r + 40
@@ -777,7 +788,7 @@ def s_pasos(c, s):
     for i, it in enumerate(items):
         c.d.ellipse([cx - r, y, cx + r, y + 2 * r], fill=c.acento)
         t = str(i + 1)
-        c.d.text((cx - fn.getlength(t) / 2, y + 14), t, font=fn, fill=c.fondo if contraste(c.fondo, c.acento) >= 2 else c.tinta)
+        centrado(c.d, cx, y + r, t, fn, c.fondo if contraste(c.fondo, c.acento) >= 2 else c.tinta)
         cab, _, det = it.partition(":")
         fin_i = c.texto(cab.strip() if det else it, (c.x0 + 2 * r + 34, y + 2, c.x1, y + (alto * 0.5 if det else alto - 10)),
                         c.p["fuerte"], 62, interlineado=1.12, minimo=34)
@@ -806,13 +817,14 @@ def s_comparacion(c, s):
     for a, b in filas:
         for x, txt, ok in ((c.x0 + 10, a, False), (mid + 36, b, True)):
             col = c.acento_txt if ok else mezcla(c.tinta, c.fondo, 0.35)
+            m = medio_x(c.p["fuerte"] if ok else c.p["texto"], 52, y)
             if ok:
-                c.d.line([x, y + 26, x + 12, y + 40, x + 34, y + 10], fill=col, width=7, joint="curve")
+                c.d.line([x, m + 1, x + 12, m + 14, x + 34, m - 15], fill=col, width=7, joint="curve")
             elif not negativa:
-                c.d.ellipse([x + 8, y + 16, x + 24, y + 32], fill=col)
+                c.d.ellipse([x + 8, m - 8, x + 24, m + 8], fill=col)
             else:
-                c.d.line([x + 4, y + 12, x + 28, y + 36], fill=col, width=6)
-                c.d.line([x + 28, y + 12, x + 4, y + 36], fill=col, width=6)
+                c.d.line([x + 4, m - 12, x + 28, m + 12], fill=col, width=6)
+                c.d.line([x + 28, m - 12, x + 4, m + 12], fill=col, width=6)
             c.texto(txt, (x + 56, y, (mid - 24) if not ok else c.x1 - 24, y + alto - 24),
                     c.p["fuerte"] if ok else c.p["texto"], 52, c.tinta if ok else mezcla(c.tinta, c.fondo, 0.3), interlineado=1.2, minimo=28)
         y += alto

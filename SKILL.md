@@ -75,7 +75,7 @@ Si no dio el tema, pregúntalo primero en una frase ("¿De qué es tu carrusel? 
 2. **¿Tu marca?** De mi página o mi Instagram (recomendado: "me pasas el link o una captura; no necesito tu contraseña ni entrar a tu cuenta") · Te paso mis cosas ("tu logo, tus fotos, tus colores o tus notas: en una carpeta, arrastradas al chat o como quieras") · Invéntamela · Sin marca. *Si hay marca guardada (`~/.carrusel-pro/marca.json`), esta pregunta es «¿Uso tu marca guardada, [nombre]?»*
 3. **¿Qué imágenes?** Fotos reales + dibujos (recomendado) · Solo dibujos · Mis fotos · Solo texto  *(si ya mandó sus fotos, no lo preguntes: van las suyas)*
 4. **¿Estilo?** Decide tú (recomendado) · Pro (limpio y serio: LinkedIn, B2B, marca personal) · Editorial · Minimal · Bloque · Cuaderno (enseña `estilos.jpg` si duda). Si «decide tú»: **LinkedIn, consultoría, empleo o marca personal → `pro`** (esta regla manda sobre el `estilo_sugerido` de `marca.py`; los colores de su marca sí se usan); comida, moda, belleza → `editorial`; tecnología y servicios → `minimal`; ventas y deporte → `bloque`; tips cercanos → `cuaderno`.
-   - Si tiene Canva conectado, **no preguntes dónde diseñarlo**: lo diseñas tú y al entregar ofreces subirlo a su Canva (ver «Ruta Canva»). Nunca uses la IA de Canva.
+   - Si tiene Canva conectado, **no preguntes dónde diseñarlo**: lo diseñas tú y al entregar ofreces subirlo a su Canva (ver «Ruta Canva»). La IA de Canva, solo si la pide.
 
 El objetivo (vender, enseñar, marca personal) y el tono los deduces del tema y de su página; no los preguntes.
 
@@ -172,10 +172,11 @@ Muéstralo como lista (lámina por lámina), ajusta lo que pida y sigue. Si dijo
 5. **Guarda su marca:** en Claude Code en `~/.carrusel-pro/marca.json` (la próxima vez solo pregunta "¿uso tu marca guardada?"). En la app, el bloque JSON para pegar en las instrucciones de un Proyecto.
 6. Ofrece ajustes concretos en una línea ("¿Cambio el gancho, el estilo o alguna imagen?") y, **una sola vez**, lo que tenga conectado (abajo).
 
-## Ruta Canva (gratis, sin gastar créditos de IA; nunca obligatoria)
+## Ruta Canva (opcional; primero, la que no gasta nada)
 
-**Nunca uses las herramientas de Canva que diseñan o generan con su IA**: `create-design`, `generate-design`, `generate-design-structured`, `create-design-from-candidate`, `generate-image`, ni `resize-design` (cambiar tamaño es de pago). Gastan los créditos de IA de la persona (en la cuenta gratis se acaban rápido: «quota exceeded») y el resultado no es el suyo. La calidad la pone esta skill.
-Lo que **sí** se puede con cualquier cuenta de Canva, también la gratis, y no gasta nada:
+**Lo primero siempre es que la skill diseñe el carrusel** (con su marca, sus fotos y logos reales) y, si tiene Canva, **subírselo a su Canva** para retocarlo: funciona con la cuenta gratis y no gasta nada (abajo).
+**La IA de Canva solo si la persona la pide** ("hazlo con la IA de Canva", "diséñalo en Canva") o si dice que tiene Canva Pro y la quiere usar. Nunca la ofrezcas como primera opción ni la uses por tu cuenta. Antes de usarla, avísale en una línea: "Eso usa los créditos de IA de tu Canva (en la cuenta gratis son pocos y se acaban). ¿Sigo?" Con su sí: `create-design` con el brief (texto exacto de cada lámina, sus colores hex, su letra, su @, formato «Instagram Post (Portrait)»), pasando como referencias sus fotos subidas; espera el trabajo y revísalo igual que el de la skill (ninguna cara cortada, logos, colores). Si sale `quota exceeded`, dilo y entrega la versión de la skill, que ya tiene. `resize-design` es de pago: no lo uses si no tiene Pro.
+Lo que se puede con cualquier cuenta de Canva, también la gratis, y **no gasta nada**:
 - **Subirle su carrusel a su Canva:** con la herramienta de subir archivos de Canva (`create-upload-url` y luego un POST del archivo, ver su descripción) sube el `carrusel.pdf` y las láminas `01.png…`. Le quedan en **Canva → Subidos**, listas para usar en un diseño, editar encima o publicar desde ahí. Dile eso tal cual y que no gastó créditos.
 - **Sus fotos que ya están en Canva:** si dice que sus fotos están en Canva, que las descargue de **Subidos** o te diga cuáles; con un diseño suyo que ya existe puedes leerlo, exportarlo (`export-design`) o editar texto o imágenes (`edit-design`) sin IA.
 - **Si no lo tiene conectado**, no hace falta: el carrusel ya sale completo. Solo si pregunta por Canva, explica cómo conectarlo (en claude.ai: **Configuración → Conectores → Canva**; en Claude Code, en la lista de conectores) y lo que gana: tenerlo en su cuenta para retocarlo.
@@ -213,7 +214,7 @@ Si pide varios: 5 temas con ángulos distintos (un error común, un paso a paso,
 | App de Claude (sin internet en el código) | Lee su página con la herramienta web, pide logos como archivo, o dibujos |
 | Sin internet | Todo con dibujos y sus fotos; el aviso de versión no dice nada |
 | No tiene Canva, Express ni Drive | Funciona igual, con la misma calidad; no insiste con conectar nada |
-| Tiene Canva (gratis o de pago) | Lo diseña Claude y, si quiere, se lo sube a su Canva (Subidos) sin gastar créditos de IA; nunca usa la IA de Canva |
+| Tiene Canva (gratis o de pago) | Lo diseña Claude y, si quiere, se lo sube a su Canva (Subidos) sin gastar créditos; la IA de Canva solo si la pide (avisa que gasta créditos) |
 | Sus fotos son de cuerpo completo o salen varias personas | El encuadre nunca corta cabezas; si no cabe bien, la foto sale completa |
 | Mezcla de marcas (su empresa + la app de la que habla) | Colores de una sola marca; las demás solo con su logo |
 | Quiere publicar directo | Le explica en 2 pasos cómo subirlo desde el celular |
@@ -236,7 +237,7 @@ Di en una frase qué pasó (sin tecnicismos) y **ofrece siempre la salida**: pre
 | Archivo que no se puede leer (HEIC, SVG, PSD, AI) | «Ese formato no lo puedo usar directo. ¿Me lo pasas en PNG o JPG? (En iPhone: compartir → guardar como JPG)» |
 | Falta Pillow y no quiere instalar | Qué es, por qué hace falta y que sin eso no se dibuja; que lo diga cuando quiera instalarlo |
 | Sin internet | «No tengo internet ahora, así que lo hago con dibujos y tus fotos. Cuando vuelva, puedo buscar fotos y logos» |
-| Canva no está conectado / falla / pide créditos | Entrega los archivos (ya están listos) y lo dice; nunca intenta con la IA de Canva |
+| Canva no está conectado / falla / se acabaron los créditos | Entrega los archivos (ya están listos) y lo dice |
 | No sabe algo de su negocio (precio, horario) | Lo pregunta en una línea; nunca lo inventa |
 
 ## Reglas de oro
@@ -246,5 +247,5 @@ Di en una frase qué pasó (sin tecnicismos) y **ofrece siempre la salida**: pre
 - Fotos solo de licencias libres y con crédito cuando lo piden; nunca fotos de personas reales presentadas como clientes.
 - Nada de texto diminuto: si no se lee en el celular, sobra.
 - Nunca una cara cortada, una captura recortada ni una foto borrosa en grande. Nunca un carrusel sin los logos de lo que menciona.
-- Nunca gastes créditos de la persona (IA de Canva u otros) sin que lo pida.
+- Nunca gastes créditos de la persona (IA de Canva u otros) sin que lo pida; la IA de Canva nunca es la primera opción.
 - La persona decide; tú propones lo mejor y explicas en una línea por qué.

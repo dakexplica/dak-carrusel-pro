@@ -10,7 +10,7 @@ Le dices a Claude **"hazme un carrusel sobre…"** y te entrega un carrusel **co
 - **Logos de todo lo que mencionas:** el de tu marca y el de cada app o empresa que nombras (Claude, Instagram, WhatsApp…), sin que lo pidas.
 - **Así se ve publicado:** tu carrusel dentro de un iPhone, en Instagram y en TikTok, antes de subirlo.
 - **Instagram (4:5), TikTok (modo foto) y LinkedIn (PDF)** a la vez, cada uno acomodado a su medida.
-- **Con Canva, si lo tienes (opcional, también el gratis):** te sube el carrusel a tu Canva para retocarlo. **No usa la IA de Canva ni gasta tus créditos.**
+- **Con Canva, si lo tienes (opcional, también el gratis):** te sube el carrusel a tu Canva para retocarlo. **No gasta tus créditos de IA** (la IA de Canva solo si tú la pides).
 - **Se adapta a lo que tengas:** con tus fotos, con Canva o desde cero (fotos reales o dibujos a la medida). Una sola ronda de preguntas y a trabajar.
 
 Incluye una **mini guía interactiva** de unos 5 minutos (3 pasos): tu primer carrusel, con tu marca, y listo para subir.
